@@ -45,7 +45,3 @@ class GeoNotes(Resource):
 
 
 api.add_resource(GeoNotes, '/geonotes')
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
