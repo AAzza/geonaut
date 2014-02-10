@@ -1,0 +1,63 @@
+- hosts: all
+  remote_user: vagrant
+  sudo: True
+
+  vars:
+    app_name: geonotes
+    app_run: server
+    src_dir: /vagrant
+    srv_dir: /srv
+
+  tasks:
+    - name: install packages
+      apt: pkg={{item}} state=installed update-cache=yes
+      with_items:
+        - git-core
+        - nginx
+        - python-pip
+        - python-virtualenv
+        - python-dev
+        - supervisor
+
+    - name: ensure app directory exists
+      file: path={{srv_dir}}/{{app_name}} state=directory
+
+    - name: ensure log directory exists
+      file: path={{srv_dir}}/{{app_name}}/log state=directory
+
+    - name: link source directory
+      file: src={{src_dir}} dest={{srv_dir}}/{{app_name}}/src state=link
+
+    - name: install python dependencies with pip
+      pip: requirements={{srv_dir}}/{{app_name}}/src/requirements.txt virtualenv={{srv_dir}}/{{app_name}}/env state=present
+
+    - name: install gunicorn into the env
+      pip:  name=gunicorn virtualenv={{srv_dir}}/{{app_name}}/env state=present
+
+    - name: write nginx conf
+      template: src=template/nginx.conf dest=/etc/nginx/nginx.conf
+
+    - name: remove default nginx enabled site
+      file: path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: create nginx config for application
+      template: src=template/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf
+
+    - name: link nginx config
+      file: src=/etc/nginx/sites-available/{{app_name}}.conf dest=/etc/nginx/sites-enabled/{{app_name}}.conf state=link
+      notify:
+        - restart-nginx
+
+    - name: enable supervisor
+      service: name=supervisor state=started enabled=yes
+
+
+    - name: create application config for supervisord
+      template: src=template/supervisor_site.conf dest=/etc/supervisor/conf.d/{{app_name}}.conf
+
+    - name: restart supervisor to reread conf and to start app
+      service: name=supervisor state=restarted
+
+  handlers:
+    - name: restart-nginx
+      service: name=nginx state=restarted
