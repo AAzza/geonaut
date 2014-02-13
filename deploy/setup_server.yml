@@ -18,6 +18,7 @@
         - python-virtualenv
         - python-dev
         - supervisor
+        - mongodb
 
     - name: ensure app directory exists
       file: path={{srv_dir}}/{{app_name}} state=directory
@@ -46,11 +47,13 @@
     - name: link nginx config
       file: src=/etc/nginx/sites-available/{{app_name}}.conf dest=/etc/nginx/sites-enabled/{{app_name}}.conf state=link
       notify:
-        - restart-nginx
+      - restart nginx
 
     - name: enable supervisor
       service: name=supervisor state=started enabled=yes
 
+    - name: enable mongodb
+      service: name=mongodb state=started enabled=yes
 
     - name: create application config for supervisord
       template: src=template/supervisor_site.conf dest=/etc/supervisor/conf.d/{{app_name}}.conf
@@ -59,5 +62,5 @@
       service: name=supervisor state=restarted
 
   handlers:
-    - name: restart-nginx
+    - name: restart nginx
       service: name=nginx state=restarted
