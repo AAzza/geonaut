@@ -6,7 +6,8 @@
     <span ng-if="note_content.latlng"> {{note_content.latlng.lat}} {{note_content.latlng.lng}} </span>
     <span ng-if="!note_content.latlng"> not available </span>
 
-    <textarea class="form-control" placeholder="Your notes here..." rows="3" ng-model="note_content.text"></textarea>
+    <textarea class="form-control" placeholder="Your notes here..." rows="3"
+        ng-model="note_content.content_text"></textarea>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="ok()">OK!</button>

@@ -1,6 +1,6 @@
 'use strict';
 
-var controllers = angular.module("geonoteControllers", ["geonoteServices"])
+var controllers = angular.module("geonoteControllers", ["StorageServices"])
 
 // controllers.controller("GeoNoteController",
 //     ["$scope", "$modal", "Notes", "$compile", function($scope, $modal, Notes, $compile) {
@@ -43,7 +43,7 @@ var controllers = angular.module("geonoteControllers", ["geonoteServices"])
 //         });
 // }]);
 
-controllers.controller("CreateNoteController", ["$scope", "$injector", function ($scope, $injector) {
+controllers.controller("CreateNoteController", ["$scope", "$injector", "NotesStorage", function ($scope, $injector, NotesStorage) {
     $scope.is_modal = $injector.has("$modalInstance");
     angular.extend($scope, {
         events: {
@@ -59,11 +59,11 @@ controllers.controller("CreateNoteController", ["$scope", "$injector", function 
     $scope.note_content = {};
 
     $scope.ok = function () {
-        //create note here
-        $scope.note_content.date = new Date();
-        console.log($scope.note_content);
+        $scope.note_content.date = new Date().toISOString();
+
+        NotesStorage.addNote($scope.note_content);
         if($scope.is_modal) {
-            $injector.get("$modalInstance").close($scope.note_content.text);
+            $injector.get("$modalInstance").close($scope.note_content);
         }
     };
 
@@ -74,8 +74,8 @@ controllers.controller("CreateNoteController", ["$scope", "$injector", function 
     };
 
     $scope.$on('leafletDirectiveMap.locationfound', function(event, args) {
-        $scope.center.lat = args.latlng.lat;
-        $scope.center.lng = args.latlng.lng;
+        $scope.note_content.lat = args.latlng.lat;
+        $scope.note_content.lng = args.latlng.lng;
     });
 
     $scope.$on('leafletDirectiveMap.locationerror', function(event, args) {
