@@ -38,6 +38,15 @@
     - name: write nginx conf
       template: src=template/nginx.conf dest=/etc/nginx/nginx.conf
 
+    - name: add mime type to nginx conf
+      lineinfile: dest=/etc/nginx/mime.types
+                  regexp="text/cache.manifest"
+                  line="text/cache.manifest       appcache;"
+                  insertafter="types {"
+                  state=present
+      notify:
+        - restart nginx
+
     - name: remove default nginx enabled site
       file: path=/etc/nginx/sites-enabled/default state=absent
 
