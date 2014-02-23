@@ -4,16 +4,6 @@ var controllers = angular.module("geonoteControllers", ["StorageServices"])
 
 controllers.controller("CreateNoteController", ["$scope", "$injector", "NotesStorage", function ($scope, $injector, NotesStorage) {
     $scope.is_modal = $injector.has("$modalInstance");
-    angular.extend($scope, {
-        events: {
-            map: {
-                enable: ['locationfound', 'locationerror']
-            }
-        },
-        center: {
-            autoDiscover: true,
-        }
-    });
 
     $scope.note_content = {};
 
@@ -33,13 +23,10 @@ controllers.controller("CreateNoteController", ["$scope", "$injector", "NotesSto
         }
     };
 
-    $scope.$on('leafletDirectiveMap.locationfound', function(event, args) {
-        $scope.note_content.lat = args.latlng.lat;
-        $scope.note_content.lng = args.latlng.lng;
-    });
-
-    $scope.$on('leafletDirectiveMap.locationerror', function(event, args) {
-        console.log("error");
-        console.log(event);
+    window.navigator.geolocation.watchPosition(function(pos) {
+        $scope.$apply(function(){
+            $scope.note_content.lat = pos.coords.latitude;
+            $scope.note_content.lng = pos.coords.longitude;
+        });
     });
 }]);

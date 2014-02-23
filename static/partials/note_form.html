@@ -4,8 +4,8 @@
 <form name="createNoteForm">
 <div class="modal-body">
     Your current coordinates:
-    <span ng-if="note_content.latlng"> {{note_content.latlng.lat}} {{note_content.latlng.lng}} </span>
-    <span ng-if="!note_content.latlng"> not available </span>
+    <span ng-if="note_content.lat"> {{note_content.lat}} {{note_content.lng}} </span>
+    <span ng-if="!note_content.lat"> not available </span>
     <textarea class="form-control" placeholder="Your notes here..." rows="3"
         ng-model="note_content.content_text" required></textarea>
 </div>

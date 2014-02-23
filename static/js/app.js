@@ -2,7 +2,6 @@
 
 angular.module('geonotes', [
   'ngRoute',
-  'leaflet-directive',
   'ui.bootstrap',
   'geonoteControllers'
 ]).config(function ($routeProvider) {
