@@ -8,12 +8,15 @@ import werkzeug
 from flask import Flask, make_response, g, request, abort
 from flask.ext.restful import Api, reqparse, Resource, fields, marshal
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
+app.config.from_object('config')
+
 api = Api(app)
 
 def get_db():
     if not hasattr(g, 'db'):
-        g.db = pymongo.MongoClient('localhost', 27017)['geonotes'].notes
+        mongoclient = pymongo.MongoClient(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
+        g.db = mongoclient['geonotes'].notes
     return g.db
 
 str2date = lambda s: dateutil.parser.parse(s)
@@ -67,4 +70,5 @@ api.add_resource(Note, '/geonotes/<string:note_id>')
 
 @app.route('/')
 def index():
+    # return app.send_static_file('index.html')
     return make_response(open('static/index.html').read())
