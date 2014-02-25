@@ -1,20 +1,15 @@
-# coding: utf-8
+# encoding: utf-8
+
+from base64 import urlsafe_b64encode
 
 import dateutil.parser
 
-import pymongo
-from bson.objectid import ObjectId
-import werkzeug
-from flask import Flask, make_response, g, request, abort
+from flask import abort
 from flask.ext.restful import Api, reqparse, Resource, fields, marshal
+from flask.ext.pymongo import PyMongo
 
-app = Flask(__name__)
-api = Api(app)
-
-def get_db():
-    if not hasattr(g, 'db'):
-        g.db = pymongo.MongoClient('localhost', 27017)['geonotes'].notes
-    return g.db
+api = Api()
+mongo = PyMongo()
 
 str2date = lambda s: dateutil.parser.parse(s)
 
@@ -27,8 +22,13 @@ parser.add_argument('text_content', type=str, help='Note content')
 #                     location='files', help='Note media content')
 
 
+class ObjectIdField(fields.Raw):
+    def format(self, value):
+        return urlsafe_b64encode(value.binary)
+
+
 note_fields = {
-    'id': fields.String(attribute="_id"),
+    'id': ObjectIdField(attribute="_id"),
     'lat': fields.Integer,
     'lng': fields.Integer,
     'date': fields.DateTime(attribute='dt'),
@@ -39,7 +39,7 @@ note_fields = {
 
 class Notes(Resource):
     def get(self):
-        return [marshal(note, note_fields) for note in get_db().find()]
+        return [marshal(note, note_fields) for note in mongo.db.geonauts.find()]
 
     def post(self):
         args = parser.parse_args()
@@ -49,22 +49,18 @@ class Notes(Resource):
             'dt': args.date,
             'txt': args.text_content,
         }
-        new_note['id_'] = get_db().insert(new_note)
+        new_note['_id'] = mongo.db.geonauts.insert(new_note)
         return marshal(new_note, note_fields), 201
 
 
 class Note(Resource):
     def get(self, note_id):
-        note = get_db().find_one(ObjectId(note_id))
+        print note_id
+        note = mongo.db.geonauts.find_one(note_id)
         if not note:
             abort(404)
         return marshal(note, note_fields)
 
 
 api.add_resource(Notes, '/geonotes')
-api.add_resource(Note, '/geonotes/<string:note_id>')
-
-
-@app.route('/')
-def index():
-    return make_response(open('static/index.html').read())
+api.add_resource(Note, '/geonotes/<objectid:note_id>')

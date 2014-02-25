@@ -1,22 +1,31 @@
+# encoding: utf-8
 import datetime
+from base64 import urlsafe_b64encode
 
 from flask.ext.testing import TestCase
 import mongomock
 import mock
 
-from server import app, get_db
+from server import create_app
+
+
+class MockPyMongo(object):
+    db = mongomock.MongoClient().geonauts
+
+    def init_app(self, app):
+        pass
+
 
 class BaseTest(TestCase):
-    def create_app(self):
+    @mock.patch('flask.ext.pymongo.PyMongo', new_callable=lambda: MockPyMongo)
+    def create_app(self, mongo):
+        app = create_app()
         app.config['TESTING'] = True
+        self.db = mongo.db.geonauts
         return app
 
     def setUp(self):
-        self.mongo_patcher = mock.patch('pymongo.MongoClient', mongomock.MongoClient)
-        self.mongo_patcher.start()
-
-    def tearDown(self):
-        self.mongo_patcher.stop()
+        self.db.remove()
 
 
 class TestGeoNotesApi(BaseTest):
@@ -40,15 +49,14 @@ class TestGeoNotesApi(BaseTest):
         self.assertEquals(resp.json, [])
 
     def test_get(self):
-        _id = get_db().insert(self.NOTE1)
+        _id = self.db.insert(self.NOTE1)
         resp = self.client.get("/geonotes")
         self.assert200(resp)
         self.assertEquals(len(resp.json), 1)
-        self.assertEqual(resp.json[0]['id'], str(_id))
 
     def test_get_several(self):
-        _id1 = get_db().insert(self.NOTE1)
-        _id2 = get_db().insert(self.NOTE2)
+        _id1 = self.db.insert(self.NOTE1)
+        _id2 = self.db.insert(self.NOTE2)
         resp = self.client.get("/geonotes")
         self.assert200(resp)
         self.assertEquals(len(resp.json), 2)
@@ -81,9 +89,17 @@ class TestGeoNoteApi(BaseTest):
     }
 
     def test_get(self):
-        id_ = get_db().insert(self.NOTE1)
-        resp = self.client.get('/geonotes/%s' % id_)
+        _id = self.db.insert(self.NOTE1)
+        hash_id = urlsafe_b64encode(_id.binary)
+        resp = self.client.get('/geonotes/%s' % hash_id)
         self.assert200(resp)
-        self.assertEqual(resp.json['id'], str(id_))
+        self.assertEqual(resp.json['id'], str(hash_id))
 
+    def test_get404(self):
+        # bad-formed object_id
+        resp = self.client.get('/geonotes/%s' % 100500)
+        self.assert404(resp)
 
+        # unexisting, but well-formed object_id
+        resp = self.client.get('/geonotes/%s' % 'UwzFp3JrW3BCFp7v')
+        self.assert404(resp)

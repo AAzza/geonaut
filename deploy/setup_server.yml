@@ -37,6 +37,8 @@
 
     - name: write nginx conf
       template: src=template/nginx.conf dest=/etc/nginx/nginx.conf
+      notify:
+      - restart nginx
 
     - name: add mime type to nginx conf
       lineinfile: dest=/etc/nginx/mime.types
@@ -52,6 +54,8 @@
 
     - name: create nginx config for application
       template: src=template/nginx_site.conf dest=/etc/nginx/sites-available/{{app_name}}.conf
+      notify:
+      - restart nginx
 
     - name: link nginx config
       file: src=/etc/nginx/sites-available/{{app_name}}.conf dest=/etc/nginx/sites-enabled/{{app_name}}.conf state=link
