@@ -1,0 +1,20 @@
+.map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.modal {
+    display: block;
+}
+
+.leaflet-popup-content {
+    min-width: 200px; !important;
+    width: auto; !important;
+    background: white;
+}
+
+.marker-popup {
+    height: auto;
+    position: relative;
+}

@@ -1,0 +1,22 @@
+CACHE MANIFEST
+# generated 2014.02.23:12:03
+
+CACHE:
+/
+/static/js/app.js
+/static/js/controllers.js
+/static/js/services.js
+/static/js/lib/angular.js
+/static/js/lib/angular-route.js
+/static/js/lib/ui-bootstrap-tpls-0.10.0.js
+/static/css/app.css
+/static/css/bootstrap/bootstrap.css
+/static/partials/main_offline.html
+/static/partials/note_form.html
+
+# FALLBACK:
+# /static/js/app.js /static/js/app_offline.js
+# /static/js/services.js /static/js/services_offline.js
+
+NETWORK:
+*
