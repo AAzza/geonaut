@@ -1,5 +1,6 @@
 flask
-flask-restful
+-e git://github.com/twilio/flask-restful.git#egg=flask-restful
 flask-script
 pymongo
 python-dateutil
+flask-pymongo

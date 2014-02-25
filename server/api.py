@@ -1,23 +1,14 @@
-# coding: utf-8
+# encoding: utf-8
 
 import dateutil.parser
 
-import pymongo
 from bson.objectid import ObjectId
-import werkzeug
-from flask import Flask, make_response, g, request, abort
+from flask import abort
 from flask.ext.restful import Api, reqparse, Resource, fields, marshal
+from flask.ext.pymongo import PyMongo
 
-app = Flask(__name__, static_url_path='')
-app.config.from_object('config')
-
-api = Api(app)
-
-def get_db():
-    if not hasattr(g, 'db'):
-        mongoclient = pymongo.MongoClient(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
-        g.db = mongoclient['geonotes'].notes
-    return g.db
+api = Api()
+mongo = PyMongo()
 
 str2date = lambda s: dateutil.parser.parse(s)
 
@@ -42,7 +33,7 @@ note_fields = {
 
 class Notes(Resource):
     def get(self):
-        return [marshal(note, note_fields) for note in get_db().find()]
+        return [marshal(note, note_fields) for note in mongo.db.geonauts.find()]
 
     def post(self):
         args = parser.parse_args()
@@ -52,13 +43,13 @@ class Notes(Resource):
             'dt': args.date,
             'txt': args.text_content,
         }
-        new_note['id_'] = get_db().insert(new_note)
+        new_note['id_'] = mongo.db.geonauts.insert(new_note)
         return marshal(new_note, note_fields), 201
 
 
 class Note(Resource):
     def get(self, note_id):
-        note = get_db().find_one(ObjectId(note_id))
+        note = mongo.db.geonauts.find_one(ObjectId(note_id))
         if not note:
             abort(404)
         return marshal(note, note_fields)
@@ -66,9 +57,3 @@ class Note(Resource):
 
 api.add_resource(Notes, '/geonotes')
 api.add_resource(Note, '/geonotes/<string:note_id>')
-
-
-@app.route('/')
-def index():
-    # return app.send_static_file('index.html')
-    return make_response(open('static/index.html').read())
