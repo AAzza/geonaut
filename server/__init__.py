@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from flask import Flask, make_response
+from flask import Flask
 
 
 def create_app():
@@ -12,8 +12,3 @@ def create_app():
     return app
 
 app = create_app()
-
-# @app.route('/')
-# def index():
-#     # return app.send_static_file('index.html')
-#     return make_response(open('static/index.html').read())
