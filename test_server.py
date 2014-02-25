@@ -1,5 +1,6 @@
 # encoding: utf-8
 import datetime
+from base64 import urlsafe_b64encode
 
 from flask.ext.testing import TestCase
 import mongomock
@@ -52,7 +53,6 @@ class TestGeoNotesApi(BaseTest):
         resp = self.client.get("/geonotes")
         self.assert200(resp)
         self.assertEquals(len(resp.json), 1)
-        self.assertEqual(resp.json[0]['id'], str(_id))
 
     def test_get_several(self):
         _id1 = self.db.insert(self.NOTE1)
@@ -89,7 +89,17 @@ class TestGeoNoteApi(BaseTest):
     }
 
     def test_get(self):
-        id_ = self.db.insert(self.NOTE1)
-        resp = self.client.get('/geonotes/%s' % id_)
+        _id = self.db.insert(self.NOTE1)
+        hash_id = urlsafe_b64encode(_id.binary)
+        resp = self.client.get('/geonotes/%s' % hash_id)
         self.assert200(resp)
-        self.assertEqual(resp.json['id'], str(id_))
+        self.assertEqual(resp.json['id'], str(hash_id))
+
+    def test_get404(self):
+        # bad-formed object_id
+        resp = self.client.get('/geonotes/%s' % 100500)
+        self.assert404(resp)
+
+        # unexisting, but well-formed object_id
+        resp = self.client.get('/geonotes/%s' % 'UwzFp3JrW3BCFp7v')
+        self.assert404(resp)
