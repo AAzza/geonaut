@@ -1,6 +1,7 @@
 # encoding: utf-8
 import datetime
 from base64 import urlsafe_b64encode
+from StringIO import StringIO
 
 from flask.ext.testing import TestCase
 import mongomock
@@ -9,19 +10,26 @@ import mock
 from server import create_app
 
 
-class MockPyMongo(object):
-    db = mongomock.MongoClient().geonauts
+pymongo_mock = {
+    'init_app.return_value': None,
+    'db': mongomock.MongoClient().geonauts,
+}
 
-    def init_app(self, app):
-        pass
+TEST_DROPBOX_URL = 'test.dropbox.test/file'
+dropbox_mock = {
+    'init_app.return_value': None,
+    'client.media.return_value': {'url': TEST_DROPBOX_URL},
+    'client.put_file.return_value': {},
+}
 
 
 class BaseTest(TestCase):
-    @mock.patch('flask.ext.pymongo.PyMongo', new_callable=lambda: MockPyMongo)
-    def create_app(self, mongo):
+    @mock.patch('flask.ext.minidrop.Dropbox', return_value=mock.Mock(**dropbox_mock))
+    @mock.patch('flask.ext.pymongo.PyMongo', return_value=mock.Mock(**pymongo_mock))
+    def create_app(self, mongo, dropbox):
         app = create_app()
         app.config['TESTING'] = True
-        self.db = mongo.db.geonauts
+        self.db = mongo().db.geonauts
         return app
 
     def setUp(self):
@@ -78,6 +86,20 @@ class TestGeoNotesApi(BaseTest):
         resp = self.client.post("/geonotes", data=to_post)
         self.assertStatus(resp, 201)
         self.assertTrue('id' in resp.json)
+
+    def test_post_with_dropbox(self):
+        to_post = {
+            'text_content': 'test',
+            'lat': 5,
+            'lng': 9,
+            'date': datetime.datetime(2013, 11, 10, 0, 0).isoformat(),
+            'media_content': (StringIO('testtesttest'), 'input.txt')
+        }
+        resp = self.client.post("/geonotes", data=to_post)
+        self.assertStatus(resp, 201)
+        self.assertTrue('id' in resp.json)
+        self.assertTrue('media_content' in resp.json)
+        self.assertEquals(resp.json['media_content'], TEST_DROPBOX_URL)
 
 
 class TestGeoNoteApi(BaseTest):

@@ -4,3 +4,4 @@ flask-script
 pymongo
 python-dateutil
 flask-pymongo
+-e git://github.com/AAzza/Flask-MiniDrop.git#egg=flask-minidrop
