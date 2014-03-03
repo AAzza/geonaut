@@ -4,13 +4,13 @@
 <form name="createNoteForm">
 <div class="modal-body">
     Your current coordinates:
-    <span ng-if="note_content.lat"> {{note_content.lat}} {{note_content.lng}} </span>
-    <span ng-if="!note_content.lat"> not available </span>
+    <span ng-if="noteContent.lat"> {{noteContent.lat}} {{noteContent.lng}} </span>
+    <span ng-if="!noteContent.lat"> not available </span>
     <textarea class="form-control" placeholder="Your notes here..." rows="3"
-        ng-model="note_content.content_text" required></textarea>
+        ng-model="noteContent.content_text" required></textarea>
 </div>
 <div class="modal-footer">
     <input type="submit" class="btn btn-primary" ng-click="ok(createNoteForm)" value="Ok" />
-    <input type="submit" class="btn btn-warning" ng-if="is_modal" ng-click="cancel()"value="Cancel"/>
+    <input type="submit" class="btn btn-warning" ng-if="isModal" ng-click="cancel()"value="Cancel"/>
 </div>
 </form
