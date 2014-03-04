@@ -7,15 +7,21 @@ controllers.controller("CreateNoteController", ["$scope", "$injector", "NotesSto
     function ($scope, $injector, NotesStorage) {
   $scope.isModal = $injector.has("$modalInstance");
   $scope.noteContent = {};
+  $scope.hasCoords = false;
 
   $scope.ok = function (form) {
+    if(form.$invalid) {
+      return;
+    }
     $scope.noteContent.date = new Date().toISOString();
 
     NotesStorage.addNote($scope.noteContent);
     if($scope.isModal) {
       $injector.get("$modalInstance").close($scope.noteContent);
+    } else {
+      $scope.noteContent = {};
+      form.$setPristine();
     }
-    form.$setPristine();
   };
 
   $scope.cancel = function () {
@@ -28,6 +34,7 @@ controllers.controller("CreateNoteController", ["$scope", "$injector", "NotesSto
     $scope.$apply(function() {
       $scope.noteContent.lat = pos.coords.latitude;
       $scope.noteContent.lng = pos.coords.longitude;
+      $scope.hasCoords = true;
     });
   });
 }]);
