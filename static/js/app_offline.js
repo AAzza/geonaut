@@ -3,13 +3,12 @@
 angular.module('geonotes', [
   'ngRoute',
   'ui.bootstrap',
-  'leaflet-directive',
   'geonoteControllers'
 ]).config(function ($routeProvider) {
   $routeProvider
   .when('/', {
-     templateUrl: 'static/partials/main.html',
-     controller: 'MapViewController'
+     templateUrl: 'static/partials/main_offline.html',
+     controller: 'CreateNoteController'
   })
   .otherwise({
     redirectTo: '/'
