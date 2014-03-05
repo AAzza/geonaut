@@ -76,4 +76,4 @@ class Note(Resource):
 
 
 api.add_resource(Notes, '/geonotes')
-api.add_resource(Note, '/geonotes/<objectid:note_id>')
+api.add_resource(Note, '/geonotes/<ObjectId:note_id>')

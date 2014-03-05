@@ -118,8 +118,8 @@ class TestGeoNoteApi(BaseTest):
     def test_get404(self):
         # bad-formed object_id
         resp = self.client.get('/geonotes/%s' % 100500)
-        self.assert404(resp)
+        self.assert400(resp)
 
         # unexisting, but well-formed object_id
-        resp = self.client.get('/geonotes/%s' % 'UwzFp3JrW3BCFp7v')
+        resp = self.client.get('/geonotes/%s' % '531778be726b5b213f3ece6b')
         self.assert404(resp)
