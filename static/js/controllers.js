@@ -53,4 +53,6 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage",
       autoDiscover: true
     }
   });
+
+  $scope.markers = NotesStorage.markers;
 }]);

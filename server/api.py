@@ -30,7 +30,7 @@ parser.add_argument('media_content', type=werkzeug.datastructures.FileStorage,
 
 class ObjectIdField(fields.Raw):
     def format(self, value):
-        return urlsafe_b64encode(value.binary)
+        return str(value)
 
 
 note_fields = {

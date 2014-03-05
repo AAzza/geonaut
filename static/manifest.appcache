@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# generated 2014.02.23:12:34
+# generated 2014.03.05:18:35
 
 CACHE:
 /
@@ -17,7 +17,7 @@ CACHE:
 FALLBACK:
 /static/partials/main.html /static/partials/main_offline.html
 /static/js/app.js /static/js/app_offline.js
-# /static/js/services.js /static/js/services_offline.js
+/static/js/services.js /static/js/services_offline.js
 
 NETWORK:
 *

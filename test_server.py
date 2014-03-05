@@ -1,6 +1,5 @@
 # encoding: utf-8
 import datetime
-from base64 import urlsafe_b64encode
 from StringIO import StringIO
 
 from flask.ext.testing import TestCase
@@ -112,10 +111,9 @@ class TestGeoNoteApi(BaseTest):
 
     def test_get(self):
         _id = self.db.insert(self.NOTE1)
-        hash_id = urlsafe_b64encode(_id.binary)
-        resp = self.client.get('/geonotes/%s' % hash_id)
+        resp = self.client.get('/geonotes/%s' % str(_id))
         self.assert200(resp)
-        self.assertEqual(resp.json['id'], str(hash_id))
+        self.assertEqual(resp.json['id'], str(_id))
 
     def test_get404(self):
         # bad-formed object_id

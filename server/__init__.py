@@ -11,12 +11,12 @@ from bson.errors import InvalidId
 class ObjectIDConverter(BaseConverter):
     def to_python(self, value):
         try:
-            return ObjectId(urlsafe_b64decode(str(value)))
+            return ObjectId(str(value))
         except (InvalidId, ValueError, TypeError):
             raise ValidationError()
 
     def to_url(self, value):
-        return urlsafe_b64encode(value.binary)
+        return str(value)
 
 
 def create_app():
