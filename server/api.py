@@ -1,15 +1,16 @@
 # encoding: utf-8
 
 import os
-from base64 import urlsafe_b64encode
+from datetime import datetime
 
 import dateutil.parser
 
 import werkzeug
-from flask import abort
+from flask import abort, current_app
 from flask.ext.restful import Api, reqparse, Resource, fields, marshal
 from flask.ext.pymongo import PyMongo
 from flask.ext.minidrop import Dropbox
+from dropbox.datastore import Date, DatastoreManager
 
 
 api = Api()
@@ -18,6 +19,13 @@ dropbox = Dropbox()
 
 
 str2date = lambda s: dateutil.parser.parse(s)
+
+def datetime2timestamp(dt, epoch=datetime(1970,1,1)):
+    dt = dt.replace(tzinfo=None)
+    td = dt - epoch
+    # return td.total_seconds()
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 1e6
+
 
 parser = reqparse.RequestParser()
 parser.add_argument('lat', type=float, required=True, help='Latitude of the note')
@@ -57,13 +65,30 @@ class Notes(Resource):
         }
         new_note['_id'] = mongo.db.geonauts.insert(new_note)
         #add to dropbox
-        if args.media_content:
+        if args.media_content and current_app.config["UPLOAD_TO_DROPBOX"]:
             _, ext = os.path.splitext(args.media_content.filename)
             filename = '/%s%s' % (new_note['_id'], ext)
             metadata = dropbox.client.put_file(filename, args.media_content)
             media_url = dropbox.client.media(filename)['url']
             mongo.db.geonauts.update({'_id': new_note['_id']}, {'$set': {'url': media_url}})
             new_note['url'] = media_url
+
+        #backup also info to dropbox-datastore
+        if current_app.config["UPLOAD_TO_DROPBOX"]:
+            datastore = DatastoreManager(dropbox.client).open_default_datastore()
+            notes_table = datastore.get_table('geonotes')
+            def do_insert():
+                drop_note = {
+                    '_id': str(new_note['_id']),
+                    'lat': new_note['lat'],
+                    'lng': new_note['lng'],
+                    'date': Date(datetime2timestamp(new_note['dt'])),
+                    'text_content': new_note['txt'],
+                }
+                if 'url' in new_note:
+                    drop_note['media_content'] = new_note['url']
+                notes_table.insert(**drop_note)
+            datastore.transaction(do_insert, max_tries=4)
         return marshal(new_note, note_fields), 201
 
 

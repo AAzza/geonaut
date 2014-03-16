@@ -23,9 +23,10 @@ dropbox_mock = {
 
 
 class BaseTest(TestCase):
+    @mock.patch('dropbox.datastore.DatastoreManager')
     @mock.patch('flask.ext.minidrop.Dropbox', return_value=mock.Mock(**dropbox_mock))
     @mock.patch('flask.ext.pymongo.PyMongo', return_value=mock.Mock(**pymongo_mock))
-    def create_app(self, mongo, dropbox):
+    def create_app(self, mongo, dropbox, datastore_manager):
         app = create_app()
         app.config['TESTING'] = True
         self.db = mongo().db.geonauts
