@@ -4,7 +4,8 @@ angular.module('geonotes', [
   'ngRoute',
   'ui.bootstrap',
   'leaflet-directive',
-  'geonoteControllers'
+  'geonoteControllers',
+  'geonoteDirectives'
 ]).config(function ($routeProvider) {
   $routeProvider
   .when('/', {

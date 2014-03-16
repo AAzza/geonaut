@@ -21,7 +21,8 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http) {
     fd.append('lng', note.lng);
     fd.append('date', note.date);
     fd.append('text_content', note.text_content);
-    // fd.append('media_content', note.mediaContent);
+    fd.append('media_content', note.media_content);
+
     $http.post('/geonotes', fd, {
       transformRequest: angular.identity,
       headers: {'Content-Type': undefined}

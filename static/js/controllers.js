@@ -21,7 +21,11 @@ controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "
   };
 
   $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+    $modalInstance.dismiss('cancel');
+  };
+
+  $scope.setFile = function($files) {
+    $scope.noteContent.media_content = $files[0];
   };
 }]);
 

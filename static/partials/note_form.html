@@ -8,13 +8,18 @@
         <span ng-if="hasCoords"> {{noteContent.lat}} {{noteContent.lng}} </span>
         <span ng-if="!hasCoords"> not available </span>
     </div>
-    <textarea class="form-control" placeholder="Your notes here..." rows="3"
-        ng-model="noteContent.text_content" required></textarea>
+    <div class="form-group" ng-class="{true: 'has-error', false: ''}[createNoteForm.$invalid]">
+        <textarea type="text" class="form-control" placeholder="Your notes here..." rows="3"
+                  ng-model="noteContent.text_content" required></textarea>
+    </div>
+    <div class="form-group" ng-if="isModal">
+        <input type="file" file-uploader="setFile($files)"/>
+    </div>
 </div>
 <div class="modal-footer">
     <input type="submit" class="btn btn-primary"
         ng-disabled="createNoteForm.$invalid || !hasCoords"
         ng-click="ok(createNoteForm)" value="Ok" />
-    <input type="submit" class="btn btn-warning" ng-if="isModal" ng-click="cancel()"value="Cancel"/>
+    <input type="button" class="btn btn-warning" ng-if="isModal" ng-click="cancel()"value="Cancel"/>
 </div>
-</form
+</form>
