@@ -3,3 +3,5 @@ __pycache__/
 *.py[cod]
 
 .vagrant/
+static/manifest.appcache
+dropbox_access_token.py
