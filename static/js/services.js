@@ -8,7 +8,8 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http, le
       'lat': parseFloat(note.lat),
       'lng': parseFloat(note.lng),
       'message': note.text_content,
-      'focus': true,
+      'focus': note.focus,
+      'icon': note.icon,
       'draggable': false
     };
     var id_ = note.id;

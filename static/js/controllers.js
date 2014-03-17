@@ -61,9 +61,28 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
         logic: 'emit'
       }
     },
-    center: {
-      autoDiscover: true
+    defaults: {
+      doubleClickZoom: false,
+      scrollWheelZoom: true,
     }
+  });
+
+  window.navigator.geolocation.watchPosition(function(pos) {
+    $scope.$apply(function() {
+      setTimeout(function() {
+        NotesStorage.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        NotesStorage.createMarker({
+          lat: pos.coords.latitude, lng: pos.coords.longitude,
+          text_content: "You are here",
+          icon: {
+            iconUrl: 'static/images/current_icon.png',
+            iconSize: [48, 48],
+            iconAnchor: [23, 42],
+          },
+          focus: true
+        });
+      }, 750);
+    });
   });
 
   $scope.markers = NotesStorage.markers;
@@ -81,3 +100,7 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
     });
   });
 }]);
+
+// Local Variables:
+// js-indent-level: 2
+// End:
