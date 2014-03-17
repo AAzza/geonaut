@@ -60,6 +60,16 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http, le
     });
   };
 
+  var getPOIreq = function(lat, lng) {
+  return "http://nominatim.openstreetmap.org/reverse?format=json&lat="
+    + lat + "&lon=" + lng;
+  }
+
+  var getPOIbyCoords = function(lat, lon, callback) {
+    $http.get(getPOIreq(lat, lon))
+    .success(callback)
+  }
+
   var stored = angular.fromJson(localStorage.getItem('geonauts_cache'));
   if(stored) {
     angular.forEach(stored, addNote);
@@ -77,6 +87,7 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http, le
     'addNote': addNote,
     'createMarker': createMarker,
     'zoomToMarkers': zoomToMarkers,
+    'getPOIbyCoords': getPOIbyCoords,
   };
 });
 

@@ -7,8 +7,16 @@ controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "
   $scope.isModal = true;
   $scope.noteContent = {};
   $scope.hasCoords = true;
+  $scope.hasPOI = false;
   $scope.noteContent.lat = latlng.lat;
   $scope.noteContent.lng = latlng.lng;
+
+  NotesStorage.getPOIbyCoords(
+    latlng.lat, latlng.lng,
+    function(data) {
+      $scope.hasPOI = true;
+      $scope.noteContent.display_name = data.display_name
+    });
 
   $scope.ok = function (form) {
     if(form.$invalid) {
