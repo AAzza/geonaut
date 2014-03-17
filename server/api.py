@@ -31,7 +31,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('lat', type=float, required=True, help='Latitude of the note')
 parser.add_argument('lng', type=float, required=True, help='Longitude of the note')
 parser.add_argument('date', type=str2date, required=True, help='Date, when note was created')
-parser.add_argument('text_content', type=str, help='Note content')
+parser.add_argument('text_content', type=unicode, help='Note content')
 parser.add_argument('media_content', type=werkzeug.datastructures.FileStorage,
                     location='files', help='Note media content')
 

@@ -87,6 +87,17 @@ class TestGeoNotesApi(BaseTest):
         self.assertStatus(resp, 201)
         self.assertTrue('id' in resp.json)
 
+    def test_post_unicode(self):
+        to_post = {
+            'text_content': u'тест',
+            'lat': 5,
+            'lng': 9,
+            'date': datetime.datetime(2013, 11, 10, 0, 0).isoformat()
+        }
+        resp = self.client.post("/geonotes", data=to_post)
+        self.assertStatus(resp, 201)
+        self.assertTrue('id' in resp.json)
+
     def test_post_with_dropbox(self):
         to_post = {
             'text_content': 'test',
