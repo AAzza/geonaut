@@ -7,6 +7,10 @@
         Your current coordinates:
         <span ng-if="hasCoords"> {{noteContent.lat}} {{noteContent.lng}} </span>
         <span ng-if="!hasCoords"> not available </span>
+        <br>
+        Estimated object:
+        <span ng-if="hasPOI"> {{noteContent.display_name}} </span>
+        <span ng-if="!hasPOI"> not available </span>
     </div>
     <div class="form-group" ng-class="{true: 'has-error', false: ''}[createNoteForm.$invalid]">
         <textarea type="text" class="form-control" placeholder="Your notes here..." rows="3"

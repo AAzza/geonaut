@@ -7,8 +7,16 @@ controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "
   $scope.isModal = true;
   $scope.noteContent = {};
   $scope.hasCoords = true;
+  $scope.hasPOI = false;
   $scope.noteContent.lat = latlng.lat;
   $scope.noteContent.lng = latlng.lng;
+
+  NotesStorage.getPOIbyCoords(
+    latlng.lat, latlng.lng,
+    function(data) {
+      $scope.hasPOI = true;
+      $scope.noteContent.display_name = data.display_name
+    });
 
   $scope.ok = function (form) {
     if(form.$invalid) {
@@ -65,9 +73,28 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
         logic: 'emit'
       }
     },
-    center: {
-      autoDiscover: true
+    defaults: {
+      doubleClickZoom: false,
+      scrollWheelZoom: true,
     }
+  });
+
+  window.navigator.geolocation.watchPosition(function(pos) {
+    $scope.$apply(function() {
+      setTimeout(function() {
+        NotesStorage.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        NotesStorage.createMarker({
+          lat: pos.coords.latitude, lng: pos.coords.longitude,
+          text_content: "You are here",
+          icon: {
+            iconUrl: 'static/images/current_icon.png',
+            iconSize: [48, 48],
+            iconAnchor: [23, 42],
+          },
+          focus: true
+        });
+      }, 750);
+    });
   });
 
   $scope.markers = NotesStorage.markers;
@@ -85,3 +112,7 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
     });
   });
 }]);
+
+// Local Variables:
+// js-indent-level: 2
+// End:

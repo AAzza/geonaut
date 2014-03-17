@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('StorageServices', []).factory('NotesStorage', function($http) {
+angular.module('StorageServices', []).factory('NotesStorage', function($http, leafletData) {
   var markers = {};
 
   var createMarker = function(note) {
@@ -8,7 +8,8 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http) {
       'lat': parseFloat(note.lat),
       'lng': parseFloat(note.lng),
       'message': note.text_content,
-      'focus': true,
+      'focus': note.focus,
+      'icon': note.icon,
       'draggable': false
     };
     var id_ = note.id;
@@ -35,6 +36,41 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http) {
     });
   };
 
+  var zoomToMarkers = function(current_loc) {
+    var current_loc = current_loc || {};
+    var minLat = current_loc.lat || 1000;
+    var maxLat = current_loc.lat || -1000;
+    var minLng = current_loc.lng || 1000;
+    var maxLng = current_loc.lng || -1000;
+
+    for (var key in markers) {
+      var marker = markers[key]
+      minLat = Math.min(minLat, marker.lat)
+      maxLat = Math.max(maxLat, marker.lat)
+      minLng = Math.min(minLng, marker.lng)
+      maxLng = Math.max(maxLng, marker.lng)
+    }
+
+    var height = maxLat - minLat;
+    var width = maxLng - minLng;
+    leafletData.getMap().then(function(m) {
+      m.fitBounds([
+        [minLat - 0.05*height, minLng - 0.05*width],
+        [maxLat + 0.05*height, maxLng + 0.05*width]
+      ]);
+    });
+  };
+
+  var getPOIreq = function(lat, lng) {
+  return "http://nominatim.openstreetmap.org/reverse?format=json&lat="
+    + lat + "&lon=" + lng;
+  }
+
+  var getPOIbyCoords = function(lat, lon, callback) {
+    $http.get(getPOIreq(lat, lon))
+    .success(callback)
+  }
+
   var stored = angular.fromJson(localStorage.getItem('geonauts_cache'));
   if(stored) {
     angular.forEach(stored, addNote);
@@ -44,10 +80,18 @@ angular.module('StorageServices', []).factory('NotesStorage', function($http) {
   $http.get('/geonotes')
   .success(function(data) {
     angular.forEach(data, createMarker);
+    zoomToMarkers(null);
   });
 
   return {
     'markers': markers,
-    'addNote': addNote
+    'addNote': addNote,
+    'createMarker': createMarker,
+    'zoomToMarkers': zoomToMarkers,
+    'getPOIbyCoords': getPOIbyCoords,
   };
 });
+
+// Local Variables:
+// js-indent-level: 2
+// End:
