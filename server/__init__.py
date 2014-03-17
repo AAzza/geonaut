@@ -17,9 +17,11 @@ def create_app():
 
     app.config.update(DEFAULT_CONFIG)
     app.config.from_object('config')
-    from .api import api, mongo, dropbox
+    from .api import api, mongo, dropbox, get_file
     api.init_app(app)
     mongo.init_app(app)
+
+    app.add_url_rule('/files/<path:filename>', 'files', get_file)
     if app.config.get('UPLOAD_TO_DROPBOX'):
         app.config.from_object('dropbox_access_token')
         dropbox.init_app(app)

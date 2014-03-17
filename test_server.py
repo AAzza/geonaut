@@ -99,7 +99,6 @@ class TestGeoNotesApi(BaseTest):
         self.assertStatus(resp, 201)
         self.assertTrue('id' in resp.json)
         self.assertTrue('media_content' in resp.json)
-        self.assertEquals(resp.json['media_content'], TEST_DROPBOX_URL)
 
 
 class TestGeoNoteApi(BaseTest):
@@ -124,3 +123,18 @@ class TestGeoNoteApi(BaseTest):
         # unexisting, but well-formed object_id
         resp = self.client.get('/geonotes/%s' % '531778be726b5b213f3ece6b')
         self.assert404(resp)
+
+    def test_post_with_dropbox(self):
+        to_post = {
+            'text_content': 'test',
+            'lat': 5,
+            'lng': 9,
+            'date': datetime.datetime(2013, 11, 10, 0, 0).isoformat(),
+            'media_content': (StringIO('testtesttest'), 'input.txt')
+        }
+        out = self.client.post("/geonotes", data=to_post)
+        _id = out.json['id']
+        resp = self.client.get('/geonotes/%s' % _id)
+        self.assert200(resp)
+        self.assertTrue('id' in resp.json)
+        self.assertTrue('media_content' in resp.json)

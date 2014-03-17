@@ -6,7 +6,7 @@ from datetime import datetime
 import dateutil.parser
 
 import werkzeug
-from flask import abort, current_app
+from flask import abort, current_app, url_for
 from flask.ext.restful import Api, reqparse, Resource, fields, marshal
 from flask.ext.pymongo import PyMongo
 from flask.ext.minidrop import Dropbox
@@ -51,9 +51,18 @@ note_fields = {
 }
 
 
+def url_for_media(note):
+    if note.get('ext'):
+        filename = "%s%s" % (note['_id'], note['ext'])
+        return url_for('files', filename=filename)
+    return None
+
 class Notes(Resource):
     def get(self):
-        return [marshal(note, note_fields) for note in mongo.db.geonauts.find()]
+        notes = list(mongo.db.geonauts.find())
+        for note in notes:
+            note['url'] = url_for_media(note)
+        return [marshal(note, note_fields) for note in notes]
 
     def post(self):
         args = parser.parse_args()
@@ -63,18 +72,22 @@ class Notes(Resource):
             'dt': args.date,
             'txt': args.text_content,
         }
-        new_note['_id'] = mongo.db.geonauts.insert(new_note)
-        #add to dropbox
-        if args.media_content and current_app.config["UPLOAD_TO_DROPBOX"]:
+        if args.media_content:
             _, ext = os.path.splitext(args.media_content.filename)
-            filename = '/%s%s' % (new_note['_id'], ext)
-            metadata = dropbox.client.put_file(filename, args.media_content)
-            media_url = dropbox.client.media(filename)['url']
-            mongo.db.geonauts.update({'_id': new_note['_id']}, {'$set': {'url': media_url}})
-            new_note['url'] = media_url
+            new_note['ext'] = ext
 
-        #backup also info to dropbox-datastore
+        _id = new_note['_id'] = mongo.db.geonauts.insert(new_note)
+
+        if args.media_content:
+            filename = "%s%s" % (_id, ext)
+            mongo.save_file(filename, args.media_content)
+            new_note['url'] = url_for_media(new_note)
+
+        #add to dropbox
         if current_app.config["UPLOAD_TO_DROPBOX"]:
+            if new_note.get('ext'):
+                dropbox.client.put_file(filename, args.media_content)
+
             datastore = DatastoreManager(dropbox.client).open_default_datastore()
             notes_table = datastore.get_table('geonotes')
             def do_insert():
@@ -85,8 +98,8 @@ class Notes(Resource):
                     'date': Date(datetime2timestamp(new_note['dt'])),
                     'text_content': new_note['txt'],
                 }
-                if 'url' in new_note:
-                    drop_note['media_content'] = new_note['url']
+                if 'ext' in new_note:
+                    drop_note['media_content'] = new_note['ext']
                 notes_table.insert(**drop_note)
             datastore.transaction(do_insert, max_tries=4)
         return marshal(new_note, note_fields), 201
@@ -97,8 +110,12 @@ class Note(Resource):
         note = mongo.db.geonauts.find_one(note_id)
         if not note:
             abort(404)
+        note['url'] = url_for_media(note)
         return marshal(note, note_fields)
 
 
 api.add_resource(Notes, '/geonotes')
 api.add_resource(Note, '/geonotes/<ObjectId:note_id>')
+
+def get_file(filename):
+    return mongo.send_file(filename)
