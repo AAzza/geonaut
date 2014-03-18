@@ -15,7 +15,7 @@ services.factory('NotesStorage', function($http, PopupRenderer, Markers) {
       transformRequest: angular.identity,
       headers: {'Content-Type': undefined}
     })
-    .success(function(data) {
+    .success(function(note) {
       var marker = {
         'lat': parseFloat(note.lat),
         'lng': parseFloat(note.lng),
