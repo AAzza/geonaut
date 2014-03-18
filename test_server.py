@@ -125,6 +125,7 @@ class TestGeoNoteApi(BaseTest):
         resp = self.client.get('/geonotes/%s' % str(_id))
         self.assert200(resp)
         self.assertEqual(resp.json['id'], str(_id))
+        self.assertEqual(resp.json['date'], self.NOTE1['dt'].isoformat())
 
     def test_get404(self):
         # bad-formed object_id

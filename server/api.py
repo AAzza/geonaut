@@ -41,11 +41,16 @@ class ObjectIdField(fields.Raw):
         return str(value)
 
 
+class ISODatetimeField(fields.Raw):
+    def format(self, value):
+        return value.isoformat()
+
+
 note_fields = {
     'id': ObjectIdField(attribute="_id"),
     'lat': fields.Float,
     'lng': fields.Float,
-    'date': fields.DateTime(attribute='dt'),
+    'date': ISODatetimeField(attribute='dt'),
     'text_content': fields.String(attribute='txt'),
     'media_content': fields.String(attribute='url'),
 }
