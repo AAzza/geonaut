@@ -78,10 +78,15 @@ controllers.controller("MapViewController", function ($scope, $modal, Markers) {
     }
   });
 
+  var zoomedAlready = false;
+
   window.navigator.geolocation.watchPosition(function(pos) {
     $scope.$apply(function() {
       setTimeout(function() {
-        Markers.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        if (!zoomedAlready) {
+          zoomedAlready = true;
+          Markers.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        }
         Markers.createMarker(null, {
           lat: pos.coords.latitude, lng: pos.coords.longitude,
           message: "You are here",
