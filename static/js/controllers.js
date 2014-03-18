@@ -2,8 +2,8 @@
 
 var controllers = angular.module("geonoteControllers", ["StorageServices"])
 
-controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "$modalInstance", "latlng",
-    function ($scope, NotesStorage, $modalInstance, latlng) {
+controllers.controller("CreateNoteModalController",
+    function ($scope, NotesStorage, $modalInstance, latlng, POI) {
   $scope.isModal = true;
   $scope.noteContent = {};
   $scope.hasCoords = true;
@@ -11,11 +11,11 @@ controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "
   $scope.noteContent.lat = latlng.lat;
   $scope.noteContent.lng = latlng.lng;
 
-  NotesStorage.getPOIbyCoords(
+  POI.getPOIbyCoords(
     latlng.lat, latlng.lng,
     function(data) {
       $scope.hasPOI = true;
-      $scope.noteContent.display_name = data.display_name
+      $scope.noteContent.display_name = data.display_name;
     });
 
   $scope.ok = function (form) {
@@ -35,10 +35,10 @@ controllers.controller("CreateNoteModalController", ["$scope", "NotesStorage", "
   $scope.setFile = function($files) {
     $scope.noteContent.media_content = $files[0];
   };
-}]);
+});
 
-controllers.controller("CreateNoteController", ["$scope", "NotesStorage",
-    function ($scope, NotesStorage) {
+
+controllers.controller("CreateNoteController", function ($scope, NotesStorage) {
   $scope.isModal = false;
   $scope.noteContent = {};
   $scope.hasCoords = false;
@@ -61,11 +61,10 @@ controllers.controller("CreateNoteController", ["$scope", "NotesStorage",
       $scope.hasCoords = true;
     });
   });
-}]);
+});
 
 
-controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
-    function ($scope, NotesStorage, $modal) {
+controllers.controller("MapViewController", function ($scope, $modal, Markers) {
   angular.extend($scope, {
     events: {
       map: {
@@ -82,10 +81,10 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
   window.navigator.geolocation.watchPosition(function(pos) {
     $scope.$apply(function() {
       setTimeout(function() {
-        NotesStorage.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        NotesStorage.createMarker({
+        Markers.zoomToMarkers({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        Markers.createMarker(null, {
           lat: pos.coords.latitude, lng: pos.coords.longitude,
-          text_content: "You are here",
+          message: "You are here",
           icon: {
             iconUrl: 'static/images/current_icon.png',
             iconSize: [48, 48],
@@ -97,12 +96,12 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
     });
   });
 
-  $scope.markers = NotesStorage.markers;
+  $scope.markers = Markers.markers;
 
   $scope.$on('leafletDirectiveMap.click', function(event, args) {
     var latlng = args.leafletEvent.latlng;
     var modalInstance = $modal.open({
-      templateUrl: 'partials/note_form.html',
+      templateUrl: 'static/partials/note_form.html',
       controller: "CreateNoteModalController",
       resolve: {
         latlng: function () {
@@ -111,7 +110,7 @@ controllers.controller("MapViewController", ["$scope", "NotesStorage", "$modal",
       }
     });
   });
-}]);
+});
 
 // Local Variables:
 // js-indent-level: 2

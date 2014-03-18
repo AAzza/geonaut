@@ -1,9 +1,9 @@
-<div class="marker-popup panel">
-    <div class="marker-popup-heading">
-        <h4 class="panel-title">{{note.date | date:mediumDate}}</h4>
-        <h4 class="small">email@com.ua</h4>
-    </div>
-    <!-- <div class="panel&#45;body"> -->
-        <p>{{note.content}}</p>
-    <!-- </div> -->
+<div class="media">
+    <a class="pull-left" href="{{image}}">
+        <img class="media-object" src="{{image}}">
+    </a>
+    <div class="media-body">
+        <h4 class="media-heading">{{createDate | date:'mediumDate'}}</h4>
+        {{text}}
+  </div>
 </div>

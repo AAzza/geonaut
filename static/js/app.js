@@ -9,10 +9,14 @@ angular.module('geonotes', [
 ]).config(function ($routeProvider) {
   $routeProvider
   .when('/', {
-     templateUrl: 'static/partials/main.html',
+     templateUrl: '/static/partials/main.html',
      controller: 'MapViewController'
   })
   .otherwise({
     redirectTo: '/'
   });
+}).run(function ($templateCache, $http) {
+  $http.get('/static/partials/marker.html', { cache: $templateCache });
+}).run(function (NotesStorage) {
+  NotesStorage.bootstrap();
 });
