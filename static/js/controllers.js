@@ -68,7 +68,7 @@ controllers.controller("MapViewController", function ($scope, $modal, Markers) {
   angular.extend($scope, {
     events: {
       map: {
-        enable: ['click', 'popupopen'],
+        enable: ['dblclick', 'popupopen'],
         logic: 'emit'
       }
     },
@@ -95,7 +95,7 @@ controllers.controller("MapViewController", function ($scope, $modal, Markers) {
             iconSize: [48, 48],
             iconAnchor: [23, 42],
           },
-          focus: true
+          focus: !zoomedAlready
         });
       }, 750);
     });
@@ -103,7 +103,7 @@ controllers.controller("MapViewController", function ($scope, $modal, Markers) {
 
   $scope.markers = Markers.markers;
 
-  $scope.$on('leafletDirectiveMap.click', function(event, args) {
+  $scope.$on('leafletDirectiveMap.dblclick', function(event, args) {
     var latlng = args.leafletEvent.latlng;
     var modalInstance = $modal.open({
       templateUrl: 'static/partials/note_form.html',
