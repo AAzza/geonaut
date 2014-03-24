@@ -38,7 +38,7 @@ controllers.controller("CreateNoteModalController",
 });
 
 
-controllers.controller("CreateNoteController", function ($scope, NotesStorage) {
+controllers.controller("CreateNoteController", function ($scope, NotesStorage, $window) {
   $scope.isModal = false;
   $scope.noteContent = {};
   $scope.hasCoords = false;
@@ -54,7 +54,7 @@ controllers.controller("CreateNoteController", function ($scope, NotesStorage) {
     form.$setPristine();
   };
 
-  window.navigator.geolocation.watchPosition(function(pos) {
+  $window.navigator.geolocation.watchPosition(function(pos) {
     $scope.$apply(function() {
       $scope.noteContent.lat = pos.coords.latitude;
       $scope.noteContent.lng = pos.coords.longitude;
@@ -64,7 +64,7 @@ controllers.controller("CreateNoteController", function ($scope, NotesStorage) {
 });
 
 
-controllers.controller("MapViewController", function ($scope, $modal, Markers) {
+controllers.controller("MapViewController", function ($scope, $modal, Markers, $window) {
   angular.extend($scope, {
     events: {
       map: {
@@ -80,7 +80,7 @@ controllers.controller("MapViewController", function ($scope, $modal, Markers) {
 
   var zoomedAlready = false;
 
-  window.navigator.geolocation.watchPosition(function(pos) {
+  $window.navigator.geolocation.watchPosition(function(pos) {
     $scope.$apply(function() {
       setTimeout(function() {
         if (!zoomedAlready) {
