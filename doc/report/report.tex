@@ -135,22 +135,36 @@ and on the other, this form embedded in modal dialog, which appears on click on 
 //TODO: compare with other frameworks
 
 \subsection{Leaflet}
-Leaflet is library for maps. It is mainly used for OpenStreetMaps and derivatives,
-but can be used also with GoogleMaps.
-Leaflet is designed with simplicity, performance and usability in mind.
-It works efficiently across all major desktop and mobile platforms out of the box,
-taking advantage of HTML5 and CSS3 on modern browsers while still being accessible on older ones.
 
-Leaflet is fairly new project, compared to OpenLayers. Thus, Leaflet is much simpler to use,
-the codebase is smaller, but on other hand, there is no a lot of examples, tutorials and
-the community is not mature. For example, the Leaflet extension for AngularJS is quite
-unmature, thus requires sometime either to extend it yourself or to use workarounds
-or to fallback to plain Leaflet, which all harms the simplicity and clarity of the code.
+Leaflet is a JavaScript library for showing interactive maps. As a map
+provider it utilizes OpenStreetMap and its derivatives, but can also
+adopt data from Google Maps. Leaflet is designed with simplicity,
+performance and usability in mind. It works efficiently across all
+major desktop and mobile platforms out of the box, taking advantage of
+HTML5 and CSS3 in modern browsers while maintaining compatibility with
+the older ones.
 
-The principal advantages of the Leaflet over OpenLayers for this project is
-it is more suitable for mobile web. The codesize of the Leaflet is smaller
-and there is builtin support for touch-screen events (touches are mapped to
-the clicks and you can zoom map with two fingers without adding extra code).
+Leaflet is relatively new project compared to OpenLayers. This means
+Leaflet doesn't yet have a bloated codebase which makes it easier to
+use; on the other hand though the documentation leaves much to be
+desired, with examples and tutorials lagging behind. Leaflet's
+community of developers is also still in its youth. For instance, the
+Leaflet extension for AngularJS is quite immature, which results in
+the necessity of either manually extending it for new cases, or
+falling back to calling Leaflet directly.
+
+Despite the previous statement, \textbf{leaflet-directive} is one of
+the reasons we employed Leaflet if favor of the alternatives.
+Leaflet-directive is a JS library that embeds Leaflet into AngularJS
+concepts and idioms. It ensures that Leaflet map behaves and gets
+managed as an idiomatic reactive entity.
+
+Another principal advantage of Leaflet over OpenLayers in this
+particular project is that the former is more suitable for the mobile
+web. Leaflet is generally smaller and has a built-in support for
+touch-screen events (touches are mapped to the clicks and you can zoom
+map with two fingers without adding extra code). For OpenLayers we
+would have to implement this features manually.
 
 \subsection{Cache manifest}
 For providing offline version HTML5 cache manifest file is used. It is still working
