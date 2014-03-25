@@ -222,8 +222,31 @@ For syncing other data (like coordinates and text) DatastoreAPI is used.
 
 // TODO: compare to other storage-service API (i.e GoogleDrive or Box)
 
-\section{Geo names}
-//TODO: about geo names
+\section{Reverse geocoding}
+
+Geocoding is the process of finding associated geographic coordinates
+from other geographic data. In our project we used the technique of
+reverse geocoding, when the geographic entity is resolved given its
+coordinates as latitude and longitude. This information can be helpful
+when the user creates a new note on the map - by seeing the exact
+address of the created note he can ascertain that there are no mistake
+with note location.
+
+Since we already benefited from OpenStreetMap as the map provider, it was
+consistent to use OSM as a geocoding source. Eventually we ended up
+with Nominatim (\url{http://nominatim.openstreetmap.org}), a simple
+service running on top of OSM databases. Nominatim provides an API
+accessed by HTTP GET request that returns data in the specified format
+(JSON in our case).
+
+One useful feature of Nominatim is the granularity of its results.
+This means that the coarser the coordinates are in the request, the
+more general the response will be. This synergizes rather well with
+Leaflet, which when clicked upon gives back coordinates of different
+accuracy based on the zoom factor. Therefore, if user clicks on the
+map from a top view, Nominatim returns the name of the country and
+probably city. But as the map is zoomed in more, geocoding source can
+response with more precise information.
 
 \section{Source code}
     You can find the latest version of the code on Github.
