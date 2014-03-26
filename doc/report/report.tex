@@ -26,19 +26,25 @@ title=\lstname,
 
 %----------------------------
 \section{Overview}
-After considering two service architectures, SOAP and REST, we decided to go with the latter.
-Our RESTful service is implemented in Python by using \href{http://flask.pocoo.org/}{Flask} microframework.
-It greatly simplifies handling HTTP requests and lets focus on the client side more.
 
-Client-side is written mostly in Javascript together with \href{http://www.angularjs.org/}{AngularJS} framework.
-AngularJS has many advantages over using plain JS, as it strongly promotes MVC pattern,
-supports declarative programming for the UI and allows to avoid many of the Javascript ugly parts.
+After considering two service architectures, SOAP and REST, we decided
+to go with the latter. Our RESTful service is implemented in Python by
+using Flask microframework\footnote{\url{http://flask.pocoo.org/}}.
+It greatly simplifies handling HTTP requests and lets focus on the
+client side more.
+
+Client-side is written mostly in Javascript together with AngularJS
+framework\footnote{\url{http://www.angularjs.org/}}. AngularJS has
+many advantages over using plain JS, as it strongly promotes MVC
+pattern, supports declarative programming for the UI and allows to
+avoid many of the Javascript ugly parts.
 
 Requirement to be able to work while offline is met by using Web Storage.
 This technology was picked because of its availability in all modern browsers.
 
-For the second part of the task we use the \href{http://leafletjs.com/}{leaflet} library
-which provides nice API for maps (in particular, OpenStreetMaps).
+For the second part of the task we use the Leaflet
+library\footnote{\url{http://leafletjs.com/}} which provides nice API
+for maps (in particular, OpenStreetMaps).
 
 The unimplemented yet part is ability to upload images from the client. As images should be
 uploaded with other content of the note i.e.\  json data we plan to use formdata from
@@ -287,7 +293,7 @@ with note location.
 
 Since we already benefited from OpenStreetMap as the map provider, it was
 consistent to use OSM as a geocoding source. Eventually we ended up
-with Nominatim (\url{http://nominatim.openstreetmap.org}), a simple
+with Nominatim\footnote{\url{http://nominatim.openstreetmap.org}}, a simple
 service running on top of OSM databases. Nominatim provides an API
 accessed by HTTP GET request that returns data in the specified format
 (JSON in our case).
