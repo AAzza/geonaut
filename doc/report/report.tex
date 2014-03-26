@@ -185,42 +185,95 @@ in should save notes to the localstorage, in the online version - send requests
 to the server.
 
 \section{DropboxAPI}
-For integration with DropboxAPI, server-side synchronization is used. The reasons
-for such decision are next:
+
+To integrate with DropboxAPI we preferred server-side synchronization.
+There were multiple reasons to support this decision:
 
 \begin{itemize}
-    \item it is compatible with RESTful design principle, when server can hide N-tiers architecture.
-    \item simplify the client, client should not bother with setting the connection both the
-server and the Dropbox
-    \item simplify authorization. Since only server connects to Dropbox, the OAuth process can
-be performed once and the access\_token can be stored on server.
+\item this approach conforms to RESTful design principles which state
+  that a server can hide a N-tier architecture beneath.
+\item it simplifies the client as the client doesn't have to deal with
+  establishing and maintaining the connection to Dropbox.
+\item security concerns - passing the Dropbox access token to the
+  client creates a vulnerability which may result in a security breach.
 \end{itemize}
 
-Dropbox provides well-designed API for access with OAuth authorization.
-There are three types of API, the application can use:
+Dropbox provides a well-designed API that can be accessed via OAuth
+authorization. There are three types of API which the application can
+use:
 
 \begin{description}
-    \item[CoreAPI] - provides access to regular file system. Allow to upload and download files.
+\item[CoreAPI] - provides access to a regular file system. Allows to
+  upload and download files.
 
-    \item[SyncAPI] - the special API for native mobile apps, so it can sync files
-        and be notified of changes.
+\item[SyncAPI] - special API for native mobile apps, it can sync files
+  and be notified of changes.
 
-    \item[DatastoreAPI] - provides access to special storage, designed to storage
-        raw data, instead of just files. Each datastore is table of records. Each record
-        is set of key-value pairs, where values can be string, numbers etc.
+\item[DatastoreAPI] - gives access to a special storage, designed to
+  hold raw data instead of files. Each datastore is a table of
+  records. Each record is a set of key-value pairs where values can be
+  strings, numbers etc.
 \end{description}
 
-Each application that wants to have access to any API, should request an app key and
-use this key in process of app authorization. Application can request two types of permissions:
-first - have access to only app folder and Datastore, and second - to have access to
-all files of the user.
-For this application minimal permissions are enough.
+An application that wants access any of the APIs listed should request
+an app key and use this key in process of authorization. There are two
+different types of permissions that the application can request: first
+grants access only to the app folder and Datastore, and second gives
+admission to all files of the user. For our project the first set of
+permissions is sufficient.
 
-Application use two DropboxAPIs: CoreAPI and DatastoreAPI.
-CoreAPI is used to upload user media content (like images)
-For syncing other data (like coordinates and text) DatastoreAPI is used.
+Therefore our server-side application uses two Dropbox APIs: CoreAPI
+and DatastoreAPI. CoreAPI is called to upload user media content (like
+images). Synchronization of other data (like coordinates and text) is
+performed via DatastoreAPI.
 
-// TODO: compare to other storage-service API (i.e GoogleDrive or Box)
+As a substitute for Dropbox to backup user data we considered
+WebDAV\footnote{\url{http://webdav.org/}}. WebDAV is not a service but
+an open protocol, an extension of HTTP that facilitates storing,
+retrieving and collaborative editing of documents and files on World
+Wide Web. We composed a list of advantages WebDAV-based solution has
+over other similar services:
+
+\begin{itemize}
+\item Since the protocol is open, any open-source WebDAV-enabled
+  server may be adopted (even the one that is self-hosted). Also the
+  user of the API can be sure that there are no wiretapping bookmarks
+  in the server code. This is especially significant in a post-Snowden
+  era when data privacy once again becomes a crucial concern.
+\item Also the openness of the protocol wins over proprietary
+  solutions as it is easier to use the API and remove flaws when the
+  specification and implementation of the storage server is publicly
+  available.
+\item The specification is stable, and the API won't suddenly change
+  unlike it does in proprietary services.
+\end{itemize}
+
+In our experiment we tried WebDAV interaction with the already
+configured ownCloud\footnote{\url{http://owncloud.org}} server.
+ownCloud is a complex personal cloud solution which manages WebDAV,
+CalDAV, CardDAV and other subservices. In order to communicate with
+its WebDAV service, we added
+python-webdav\footnote{\url{https://github.com/scaryclam/python-webdav}}
+library to our server application, which is just a thin wrapper around
+WebDAV HTTP requests. It provides a straightforward method to connect
+and upload files to the WebDAV instance. In Python code it looks like
+this:
+
+\begin{lstlisting}[language=Python]
+  import python_webdav.client
+  ...
+  c = python_webdav.client.Client('http://example.com/', '/myDir')
+  c.set_connection(username='user', password='pass')
+  response = c.upload_file('mydata.json')
+\end{lstlisting}
+
+Overall we found WebDAV to be more suitable for the task we were
+facing. The only disadvantage when compared to Dropbox is the lack of
+effective key-value storage (substitute for Datastore API). Because of
+this fact we were forced to manipulate a JSON file and manually upload
+it to the ownCloud server. The other point of difference is the
+necessity of hosting the server yourself (which can be either
+advantage or disadvantage, depending on the situation).
 
 \section{Reverse geocoding}
 
