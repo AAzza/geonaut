@@ -52,50 +52,68 @@ the XMLHttpRequest 2 standard, which allows to post any formdata. Downside of th
 non pure solution), that minimal version of the IE, that supports XHR2 is 10.
 
 \section{RESTful service}
-As the main client for the service is the web application, then REST api has
-several advantages over the SOAP-bases solution.
+
+As the main client for the developed service is a web application,
+REST API has several advantages over a SOAP-based solution.
 
 \begin{itemize}
-    \item REST is use full features of HTTP (different methods and results codes),
-        thus information about client-server communication is spread between the
-        method, which is asked, the result code server returns and the message itself.
-        It could be good or bad depending on the application, but it is well-fitted
-        to the model web-client and particulary javascript uses.
-    \item the JSON is native for javascript, whereas XML could be hardly created and parsed.
-    \item all modern frameworks and libraries support commnunication and retrieval data from RESTful
-        service, whereas only few could work with SOAP based solution.
-    \item developing RESTful service could be done much faster
+\item REST takes full advantage of available HTTP features (different
+  methods and result codes), thus information about the client-server
+  communication is partitioned between the solicited method, the
+  result code returned by the server, and the message itself. This
+  separation can be good or bad depending on the application, but it
+  fits well into the model web-client (particularly, its JavaScript
+  part) uses.
+\item JSON data format is native to JavaScript, whereas XML creation
+  and parsing involves certain difficulties.
+\item Among modern frameworks and libraries absolute majority supports
+  communication and data retrieval from a RESTful service. Although
+  only few of them can work with a SOAP-driven server.
+\item RESTful services are generally easier to implement and reason
+  about, which cuts down on development time.
 \end{itemize}
 
-There could be some reasons to use SOAP-based solution. One of the dominant -
-if you should integrate with the existing infrastructure, that is already built
-using SOAP. Also several programming languages has good support for SOAP, but
-Python is not from that group of languages.
+There could be reasons to develop a SOAP-based solution. One of the
+dominant is if you have to incorporate you project into the existing
+infrastructure which already operates on SOAP. Besides, there are
+programming languages that support SOAP on a better level, which
+Python is not one of.
 
-So as a result - Python with Flask-Restful and AngularJS, which commnunicate via JSON,
-form good stack of technologies, which are compatible with each other.
-It is also possible to form other stack of technologies, which is based on SOAP
-(and possibly Java).
+So ultimately we decided on a technology stack consisting of Python
+the language, Flask-Restful microframework and AngularJS - a solid set
+of tools that synergize well with each other.It is also possible to
+form other stack of technologies based on SOAP (possibly using Java or
+C\#).
 
-The service will allow user to create and get `notes' (rich geotagged messages). Note is basically a
-dictionary (or in other words json object) which holds geocoordinates and user-provided content (text or image).
+The service will allow users to create and get ``notes'' (rich geotagged
+messages). Note is basically a dictionary (a JSON object) which
+contains geographic coordinates and user-specified content (text
+and/or image).
 
 Currently our service supports the following requests:
+
 \begin{description}
-    \item[geonotes(GET)] return a list of all stored notes
-    \item[geonotes(POST)] create new note. As newly created note is not fully equal to posted data.
-        The provided image is represented as url for dropbox file, when information about note
-        is provided for user. Because of this, the result of the POST is not only id, as
-        some architectures suggest, but full note content, as it is represented in geonotes list in GET response.
-    \item[geonotes/<note\_id>(GET)] return a specific note
+\item[/geonotes(GET)] return a list of all stored notes.
+\item[/geonotes(POST)] create new note. \textbf{AS NEWLY CREATED NOTE
+  IS NOT FULLY EQUAL TO POSTED DATA???}. The image for the note (if
+  provided) is represented as the URL to a file stored on Dropbox,
+  \textbf{WHEN INFORMATION ABOUT NOTE IS PROVIDED FOR USER???}.
+  Because of this, in response to the POST request the server returns
+  not just the ID (as some architectures suggest) but a complete note
+  object, same as it is represented in geonotes list in GET response.
+\item[geonotes/<note\_id>(GET)] return a specific note.
 \end{description}
 
-Other possible operations on notes (such as edits and deletions) are not mentioned in the task, but can be implemented later via adding extra service requests.
+Other possible operations on notes (such as edits and deletions) are
+not mentioned in the task, but can be implemented later by adding the
+necessary service requests.
 
-One remark should be made about bulk operations.
-Canonical REST architecture specification does not clearly define how to design bulk requests (i.e.\ bulk creates and updates).
-Since the client-side will send multiple changes after the offline session, we will consider to extend service API with an ability to accept bulk requests
-for faster start-up and more optimal bandwidth usage.
+One remark should be made about bulk operations. Canonical REST
+architecture specification does not clearly define how to design bulk
+requests (i.e.\ bulk creates and updates). Since the client-side will
+send multiple changes after the offline session, we will consider to
+extend service API with an ability to accept bulk requests for faster
+start-up and more optimal bandwidth usage.
 
 \section{Client-side}
 
