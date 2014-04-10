@@ -94,10 +94,10 @@ Currently our service supports the following requests:
 
 \begin{description}
 \item[/geonotes(GET)] return a list of all stored notes.
-\item[/geonotes(POST)] create new note. \textbf{AS NEWLY CREATED NOTE
-  IS NOT FULLY EQUAL TO POSTED DATA???}. The image for the note (if
-  provided) is represented as the URL to a file stored on Dropbox,
-  \textbf{WHEN INFORMATION ABOUT NOTE IS PROVIDED FOR USER???}.
+\item[/geonotes(POST)] create new note. New created note
+  is not equal to posted data. The image (if
+  provided) is represented as the URL to a file, so the resulting object is
+  pure JSON and to allow deferred load of images.
   Because of this, in response to the POST request the server returns
   not just the ID (as some architectures suggest) but a complete note
   object, same as it is represented in geonotes list in GET response.
@@ -134,13 +134,36 @@ versions of popular browsers, which support features, used in client-side.
 \end{table}
 
 \subsection{AngularJS}
+Modern web-development of rich clients in Javascript could not be done without
+good libraries and frameworks. The use of frameworks allows to organize
+Javascript code, build architecture that separates business-logic from the
+representation and doesn't include spagetti-code of callbacks.
 
-One of the neat features of AngularJs is good support for form validation and in overall
-handling different form states (clean - dirty, valid - invalid). This allows to 
-easily give user feedback, whether he can submit the form or not and what is the problem.
+There are several popular frameworks, some of them are modern and some appeared
+some time ago. Next some notes about several of them are presented:
+Backbone\footnote{\url{http://backbonejs.org/}},
+AngularJs\footnote{\url{http://angularjs.org/}},
+EmberJs\footnote{\url{http://angularjs.org/}}.
 
-On the figures there are screenshots of offline version, which contains only form,
-and on the other, this form embedded in modal dialog, which appears on click on map.
+Backbone is classic Javascript framework, that leaves Javascript semantic and idoms,
+and just add another layer of templates and views. The important result of
+this approach is fast learning curve, the move from plain Javascript architecture to
+one, based on the Backbone, doesn't require paradigm shift in the mind.
+The main disadvantage of Backbone is amount of the boiler plate code, that should
+be written in addition. Basically, the architecture and code wiring is done by
+the developer without any help from Backbone. Another downside is lack of some
+modern features, that recent frameworks introduced.
+
+AngularJs is modern framework to build single-page applications. Main features
+are encouraging support for dependency injections, strict separation between
+business logic and the view, also it allows to have modularity out from the box.
+It has all modern features like promises to get rid of callback-hell, two-way
+binding between model and view and large amount of builtin helpers and filters.
+
+But the cost for the use of such rich library is the cost of learning it.
+The AngularJs has its own view on code structuring, it relies on declarative
+style a lot. Another drawback of using AngularJs - all code should be written
+using `Angular-way' to be consistent, which requires even more effort.
 
     \begin{figure}[h]
       \begin{center}
@@ -156,7 +179,21 @@ and on the other, this form embedded in modal dialog, which appears on click on 
       \caption{Offline version}
     \end{figure}
 
-//TODO: compare with other frameworks
+One of the neat features of AngularJs is good support for form validation and in overall
+handling different form states (clean - dirty, valid - invalid). This allows to
+easily give user feedback, whether he can submit the form or not and what is the problem.
+
+EmberJs is the youngest from the three frameworks. It uses similar technics
+as AngularJs, but with more ordinary javascript point of view, thus requiring
+less mind-changing. Compare to other libraries, EmberJs has the largest file size,
+because of including a lot of features into the standard build. It is great for
+developing big sites, which has chances to use this features, but for the small
+single-page application, devoted for the mobile use, it is not so great. Than is
+why we decided to use AngularJs for this project, which has enough of useful
+features, but is not overhelmed with them.
+
+On the figures there are screenshots of offline version, which contains only form,
+and on the other, this form embedded in modal dialog, which appears on click on map.
 
 \subsection{Leaflet}
 
@@ -205,7 +242,7 @@ controller is specified. For online version, root controller and template render
 and for offline version, it is just form, where user can write his notes.
 
 Next is \textit{services.js}, which corresponds to the model. In offline version
-in should save notes to the localstorage, in the online version - send requests
+it should save notes to the localstorage, in the online version - send requests
 to the server.
 
 \section{DropboxAPI}
