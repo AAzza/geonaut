@@ -336,9 +336,52 @@ it to the ownCloud server. The other point of difference is the
 necessity of hosting the server yourself (which can be either
 advantage or disadvantage, depending on the situation).
 
+\section{Ontologies}
+Onlotogies is a way to represent knowledge in terms of terms and their
+relations for specific domain formally. There are a lot of already developed
+and designed ontologies for many scientific domain.
+
+Incopration of such pre-defined ontologies into new projects in this specific domain could
+result in several benefits: the terms, that will be used in the project,
+now will have specific defined meaning, which would be the same for
+any other project, incorporating the same ontology, thus enabling their
+easier integration and communication. From other point of view - ontology
+often could be viewed as formal model of the field, thus making easier for
+specialist from other fields, communicate with the domain experts.
+
+The project developed is to be used by the Norwegian Ministy of Environment,
+for automating reporting of actual state of protected areas. The project
+could benefit from several ontlogies from the ecology world.
+
+First is The Extensible Observation Ontology (OBOE) being developed under the Science
+Environment for Ecological Knowledge (SEEK) project. This ontology
+specifies basic concepts in observations, measurements and monitoring datasets.
+By marking up the reports in the project with the appropriate terms from this
+ontology, the resutling collected data could be viewed and threated by any other
+automated tool properly.
+
+The another type of the ontology could be used to ``tag'' each geonote with
+domain terms: for example, the user could specify the type of protected object
+or classify it state formally in addition to the textual comment for people.
+Any formal additional information will simplify the automated processing of
+the data.
+
+Another ontology that the project could incorporate is related to the geodata,
+in particularly it could be used to reverse geocoding and adding meaning to
+the coordinates. There are several such services, one of the most prominent is
+GeoNames. It contains a lot of information about the geographical objects:
+their coordinates, type, names in different languages.
+
+The advantage of integrating this service is lied in enhanced user experience,
+as it allows to operate, not only in geocoodinates terms (which people are not good
+in remembering), but also in real names of the objects.
+Also it could help to detect the problem with inproper GPS-location. If under
+current location, user cannot see the expected object name, it could signal
+about not-updated location. All this could enhance the accuracy of the monitoring.
+
 \section{Reverse geocoding}
 
-Geocoding is the process of finding associated geographic coordinates
+As we discussed, geocoding is the process of finding associated geographic coordinates
 from other geographic data. In our project we used the technique of
 reverse geocoding, when the geographic entity is resolved given its
 coordinates as latitude and longitude. This information can be helpful
@@ -351,7 +394,8 @@ consistent to use OSM as a geocoding source. Eventually we ended up
 with Nominatim\footnote{\url{http://nominatim.openstreetmap.org}}, a simple
 service running on top of OSM databases. Nominatim provides an API
 accessed by HTTP GET request that returns data in the specified format
-(JSON in our case).
+(JSON in our case). It is similar to the GeoNames, but requires no registration
+and is managed by the OSM community.
 
 One useful feature of Nominatim is the granularity of its results.
 This means that the coarser the coordinates are in the request, the
