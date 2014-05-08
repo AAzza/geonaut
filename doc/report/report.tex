@@ -12,13 +12,8 @@
 \usepackage{hyperref}
 \usepackage{setspace}
 \begin{document}
-\lstset{
-numbers=left,
-tabsize=4,
-breaklines=true,
-title=\lstname,
-}
-\title{Status report for IMT4002}
+\lstset{numbers=left,tabsize=4,breaklines=true,title=\lstname,}
+\title{Project report for IMT4002}
 \author{(Nataliia Uvarova, Oleksandr Yakushev, 13HMACSA)}
 \date{2014}
 \maketitle
@@ -75,13 +70,13 @@ REST API has several advantages over a SOAP-based solution.
 
 There could be reasons to develop a SOAP-based solution. One of the
 dominant is if you have to incorporate you project into the existing
-infrastructure which already operates on SOAP. Besides, there are
+infrastructure which already operates on SOAP\@. Besides, there are
 programming languages that support SOAP on a better level, which
 Python is not one of.
 
 So ultimately we decided on a technology stack consisting of Python
 the language, Flask-Restful microframework and AngularJS - a solid set
-of tools that synergize well with each other.It is also possible to
+of tools that synergize well with each other. It is also possible to
 form other stack of technologies based on SOAP (possibly using Java or
 C\#).
 
@@ -188,7 +183,7 @@ as AngularJs, but with more ordinary javascript point of view, thus requiring
 less mind-changing. Compare to other libraries, EmberJs has the largest file size,
 because of including a lot of features into the standard build. It is great for
 developing big sites, which has chances to use this features, but for the small
-single-page application, devoted for the mobile use, it is not so great. Than is
+single-page application, devoted for the mobile use, it is not so great. That is
 why we decided to use AngularJs for this project, which has enough of useful
 features, but is not overhelmed with them.
 
@@ -284,7 +279,7 @@ admission to all files of the user. For our project the first set of
 permissions is sufficient.
 
 Therefore our server-side application uses two Dropbox APIs: CoreAPI
-and DatastoreAPI. CoreAPI is called to upload user media content (like
+and DatastoreAPI\@. CoreAPI is called to upload user media content (like
 images). Synchronization of other data (like coordinates and text) is
 performed via DatastoreAPI.
 
@@ -337,11 +332,11 @@ necessity of hosting the server yourself (which can be either
 advantage or disadvantage, depending on the situation).
 
 \section{Ontologies}
-Onlotogies is a way to represent knowledge in terms of terms and their
+Ontologies is a way to represent knowledge in terms of terms and their
 relations for specific domain formally. There are a lot of already developed
 and designed ontologies for many scientific domain.
 
-Incopration of such pre-defined ontologies into new projects in this specific domain could
+Incorporation of such pre-defined ontologies into new projects in this specific domain could
 result in several benefits: the terms, that will be used in the project,
 now will have specific defined meaning, which would be the same for
 any other project, incorporating the same ontology, thus enabling their
@@ -349,15 +344,15 @@ easier integration and communication. From other point of view - ontology
 often could be viewed as formal model of the field, thus making easier for
 specialist from other fields, communicate with the domain experts.
 
-The project developed is to be used by the Norwegian Ministy of Environment,
+The project developed is to be used by the Norwegian Ministry of Environment,
 for automating reporting of actual state of protected areas. The project
-could benefit from several ontlogies from the ecology world.
+could benefit from several ontologies from the ecology world.
 
 First is The Extensible Observation Ontology (OBOE) being developed under the Science
 Environment for Ecological Knowledge (SEEK) project. This ontology
 specifies basic concepts in observations, measurements and monitoring datasets.
 By marking up the reports in the project with the appropriate terms from this
-ontology, the resutling collected data could be viewed and threated by any other
+ontology, the resulting collected data could be viewed and threated by any other
 automated tool properly.
 
 The another type of the ontology could be used to ``tag'' each geonote with
@@ -375,7 +370,7 @@ their coordinates, type, names in different languages.
 The advantage of integrating this service is lied in enhanced user experience,
 as it allows to operate, not only in geocoodinates terms (which people are not good
 in remembering), but also in real names of the objects.
-Also it could help to detect the problem with inproper GPS-location. If under
+Also it could help to detect the problem with improper GPS-location. If under
 current location, user cannot see the expected object name, it could signal
 about not-updated location. All this could enhance the accuracy of the monitoring.
 
@@ -407,19 +402,16 @@ probably city. But as the map is zoomed in more, geocoding source can
 response with more precise information.
 
 \section{Source code}
-    You can find the latest version of the code on Github.
-    \url{https://github.com/AAzza/geonaut}.
-
     \begin{description}
         \item[server/] here lives the restful server.
-        \item[test\_server.py] here lives tests for server.
-        \item[templates/manifest.appcache.jinja] Template for HTML5 cache manifest file.
+        \item[test\_server.py] tests for server.
+        \item[templates/manifest.appcache.jinja] template for HTML5 cache manifest file.
         \item[static/index.html] entry point for the client-side.
         \item[static/js/app.js] entry point for the Angular applicaion.
         \item[static/js/app\_offline.js] entry point for the offline Angular applicaion.
         \item[static/js/controllers.js] file with all controllers, which contains all application logic.
         \item[static/js/services.js] storage and model for online version (perform request to server).
         \item[static/js/services\_offline.js] storage and model (store data to localstorage).
-        \item[static/js/partial/] directory with html templates
+        \item[static/js/partial/] directory with html templates.
     \end{description}
 \end{document}
