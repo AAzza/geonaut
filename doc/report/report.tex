@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{indentfirst}
 \usepackage{tabularx}
+\usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{setspace}
 \begin{document}
@@ -17,7 +18,7 @@
 \author{(Nataliia Uvarova, Oleksandr Yakushev, 13HMACSA)}
 \date{2014}
 \maketitle
-\onehalfspacing
+\onehalfspacing{}
 
 %----------------------------
 \section{Overview}
@@ -28,23 +29,25 @@ using Flask microframework\footnote{\url{http://flask.pocoo.org/}}.
 It greatly simplifies handling HTTP requests and lets focus on the
 client side more.
 
-Client-side is written mostly in Javascript together with AngularJS
+Client-side is written mostly in JavaScript together with AngularJS
 framework\footnote{\url{http://www.angularjs.org/}}. AngularJS has
 many advantages over using plain JS, as it strongly promotes MVC
 pattern, supports declarative programming for the UI and allows to
-avoid many of the Javascript ugly parts.
+avoid many of the JavaScript ugly parts.
 
 Requirement to be able to work while offline is met by using Web Storage.
 This technology was picked because of its availability in all modern browsers.
 
 For the second part of the task we use the Leaflet
 library\footnote{\url{http://leafletjs.com/}} which provides nice API
-for maps (in particular, OpenStreetMaps).
+for maps (in particular, OpenStreetMap).
 
-The unimplemented yet part is ability to upload images from the client. As images should be
-uploaded with other content of the note i.e.\  json data we plan to use formdata from
-the XMLHttpRequest 2 standard, which allows to post any formdata. Downside of this approach (in contrast to use
-non pure solution), that minimal version of the IE, that supports XHR2 is 10.
+The part that wasn't implemented yet is the ability to upload images
+from the client. As images should be uploaded with other content of
+the note i.e.\ JSON data we plan to use \texttt{formdata} from the
+XMLHttpRequest 2 standard, which allows to post any \texttt{formdata}.
+The downside of this approach (in contrast to using a non-pure
+solution) is that the minimal version of IE supporting XHR2 is 10.
 
 \section{RESTful service}
 
@@ -75,10 +78,10 @@ programming languages that support SOAP on a better level, which
 Python is not one of.
 
 So ultimately we decided on a technology stack consisting of Python
-the language, Flask-Restful microframework and AngularJS - a solid set
-of tools that synergize well with each other. It is also possible to
-form other stack of technologies based on SOAP (possibly using Java or
-C\#).
+the language, Flask-Restful microframework and AngularJS --- a solid
+set of tools that synergize well with each other. It is also possible
+to form other stack of technologies based on SOAP (possibly using Java
+or C\#).
 
 The service will allow users to create and get ``notes'' (rich geotagged
 messages). Note is basically a dictionary (a JSON object) which
@@ -88,15 +91,15 @@ and/or image).
 Currently our service supports the following requests:
 
 \begin{description}
-\item[/geonotes(GET)] return a list of all stored notes.
-\item[/geonotes(POST)] create new note. New created note
+\item[\texttt{/geonotes(GET)}] return a list of all stored notes.
+\item[\texttt{/geonotes(POST)}] create new note. New created note
   is not equal to posted data. The image (if
   provided) is represented as the URL to a file, so the resulting object is
   pure JSON and to allow deferred load of images.
   Because of this, in response to the POST request the server returns
   not just the ID (as some architectures suggest) but a complete note
   object, same as it is represented in geonotes list in GET response.
-\item[geonotes/<note\_id>(GET)] return a specific note.
+\item[\texttt{geonotes/<note\_id>(GET)}] return a specific note.
 \end{description}
 
 Other possible operations on notes (such as edits and deletions) are
@@ -112,80 +115,86 @@ start-up and more optimal bandwidth usage.
 
 \section{Client-side}
 
-Here is summarized table (based on \url{http://caniuse.com}) of the minimal
-versions of popular browsers, which support features, used in client-side.
+Here is the summarized table (based on ``Can I
+use\ldots''\footnote{\url{http://caniuse.com}} data) of the minimal
+versions of popular browsers, which support features, used in
+client-side.
 
 \begin{table}[h!]
-    \caption{Browsers compatibility (in braces - current version)}
-    \begin{tabularx}{\linewidth}{|c|X|X|X|X|X|X|X|}
-        \hline
-        Feature & IE (11.0) & Firefox (27) & Chrome (33) & Safari (7.0) & Opera (19) & IOS Safari (7.0) & Android Browser (4.4) \\ \hline
-        XMLHttpRequest 2 & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 5.0 & 3.0 \\ \hline
-        Offline cache    & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 3.2 & 2.1 \\ \hline
-        Geolocation      &  9.0 & 26.0 & 31 & 7.0 & 19.0 & 3.2 & 2.1 \\ \hline
-        \hline
-        Resulting        & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 5.0 & 3.0 \\ \hline
-    \end{tabularx}
+  \caption{Browsers compatibility (in braces --- current version)}
+  \begin{tabularx}{\linewidth}{c X X X X X X X}
+    \toprule
+    Feature & IE (11.0) & Firefox (27) & Chrome (33) & Safari
+    (7.0) & Opera (19) & Safari iOS (7.0) & Android Browser (4.4) \\
+    \midrule
+    XMLHttpRequest 2 & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 5.0 & 3.0 \\
+    Offline cache    & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 3.2 & 2.1 \\
+    Geolocation      &  9.0 & 26.0 & 31 & 7.0 & 19.0 & 3.2 & 2.1 \\
+    \midrule
+    Resulting        & 10.0 & 26.0 & 31 & 7.0 & 19.0 & 5.0 & 3.0 \\
+    \bottomrule
+  \end{tabularx}
 \end{table}
 
 \subsection{AngularJS}
-Modern web-development of rich clients in Javascript could not be done without
+Modern web-development of rich clients in JavaScript could not be done without
 good libraries and frameworks. The use of frameworks allows to organize
-Javascript code, build architecture that separates business-logic from the
-representation and doesn't include spagetti-code of callbacks.
+JavaScript code, build architecture that separates business-logic from the
+representation and doesn't include spaghetti-code of callbacks.
 
 There are several popular frameworks, some of them are modern and some appeared
 some time ago. Next some notes about several of them are presented:
 Backbone\footnote{\url{http://backbonejs.org/}},
-AngularJs\footnote{\url{http://angularjs.org/}},
-EmberJs\footnote{\url{http://angularjs.org/}}.
+AngularJS\footnote{\url{http://angularjs.org/}},
+EmberJS\footnote{\url{http://angularjs.org/}}.
 
-Backbone is classic Javascript framework, that leaves Javascript semantic and idoms,
-and just add another layer of templates and views. The important result of
-this approach is fast learning curve, the move from plain Javascript architecture to
-one, based on the Backbone, doesn't require paradigm shift in the mind.
-The main disadvantage of Backbone is amount of the boiler plate code, that should
-be written in addition. Basically, the architecture and code wiring is done by
-the developer without any help from Backbone. Another downside is lack of some
-modern features, that recent frameworks introduced.
+Backbone is classic JavaScript framework, that leaves JavaScript semantic and
+idioms, and just add another layer of templates and views. The important result
+of this approach is fast learning curve, the move from plain JavaScript
+architecture to one, based on the Backbone, doesn't require paradigm shift in
+the mind. The main disadvantage of Backbone is amount of the boiler plate code,
+that should be written in addition. Basically, the architecture and code wiring
+is done by the developer without any help from Backbone. Another downside is
+lack of some modern features, that recent frameworks introduced.
 
-AngularJs is modern framework to build single-page applications. Main features
+AngularJS is modern framework to build single-page applications. Main features
 are encouraging support for dependency injections, strict separation between
 business logic and the view, also it allows to have modularity out from the box.
 It has all modern features like promises to get rid of callback-hell, two-way
-binding between model and view and large amount of builtin helpers and filters.
+binding between model and view and large amount of built-in helpers and filters.
 
-But the cost for the use of such rich library is the cost of learning it.
-The AngularJs has its own view on code structuring, it relies on declarative
-style a lot. Another drawback of using AngularJs - all code should be written
-using `Angular-way' to be consistent, which requires even more effort.
+But the cost for the use of such rich library is the cost of learning it. The
+AngularJS has its own view on code structuring, it relies on declarative style a
+lot. Another drawback of using AngularJS --- all code should be written using
+the `Angular way' to be consistent, which requires even more effort.
 
-    \begin{figure}[h]
-      \begin{center}
-        \includegraphics[width=\textwidth]{res/online}
-      \end{center}
-      \caption{Online version}
-    \end{figure}
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{res/online}
+  \end{center}
+  \caption{Online version}
+\end{figure}
 
-    \begin{figure}[h]
-      \begin{center}
-        \includegraphics[width=\textwidth]{res/offline}
-      \end{center}
-      \caption{Offline version}
-    \end{figure}
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{res/offline}
+  \end{center}
+  \caption{Offline version}
+\end{figure}
 
-One of the neat features of AngularJs is good support for form validation and in overall
-handling different form states (clean - dirty, valid - invalid). This allows to
-easily give user feedback, whether he can submit the form or not and what is the problem.
+One of the neat features of AngularJS is good support for form validation and in
+overall handling different form states (clean --- dirty, valid --- invalid).
+This allows to easily give user feedback, whether he can submit the form or not
+and what is the problem.
 
-EmberJs is the youngest from the three frameworks. It uses similar technics
-as AngularJs, but with more ordinary javascript point of view, thus requiring
+EmberJs is the youngest from the three frameworks. It uses similar techniques
+as AngularJS, but with more ordinary JavaScript point of view, thus requiring
 less mind-changing. Compare to other libraries, EmberJs has the largest file size,
 because of including a lot of features into the standard build. It is great for
 developing big sites, which has chances to use this features, but for the small
 single-page application, devoted for the mobile use, it is not so great. That is
-why we decided to use AngularJs for this project, which has enough of useful
-features, but is not overhelmed with them.
+why we decided to use AngularJS for this project, which has enough of useful
+features, but is not overwhelmed with them.
 
 On the figures there are screenshots of offline version, which contains only form,
 and on the other, this form embedded in modal dialog, which appears on click on map.
@@ -236,9 +245,9 @@ It is \textit{app.js}, which is specification of Angular application, where root
 controller is specified. For online version, root controller and template renders maps
 and for offline version, it is just form, where user can write his notes.
 
-Next is \textit{services.js}, which corresponds to the model. In offline version
-it should save notes to the localstorage, in the online version - send requests
-to the server.
+Next is \textit{services.js}, which corresponds to the model. In
+offline version it should save notes to the localstorage, in the
+online version --- send requests to the server.
 
 \section{DropboxAPI}
 
@@ -250,7 +259,7 @@ There were multiple reasons to support this decision:
   that a server can hide a N-tier architecture beneath.
 \item it simplifies the client as the client doesn't have to deal with
   establishing and maintaining the connection to Dropbox.
-\item security concerns - passing the Dropbox access token to the
+\item security concerns --- passing the Dropbox access token to the
   client creates a vulnerability which may result in a security breach.
 \end{itemize}
 
@@ -259,13 +268,13 @@ authorization. There are three types of API which the application can
 use:
 
 \begin{description}
-\item[CoreAPI] - provides access to a regular file system. Allows to
+\item[CoreAPI] --- provides access to a regular file system. Allows to
   upload and download files.
 
-\item[SyncAPI] - special API for native mobile apps, it can sync files
+\item[SyncAPI] --- special API for native mobile apps, it can sync files
   and be notified of changes.
 
-\item[DatastoreAPI] - gives access to a special storage, designed to
+\item[DatastoreAPI] --- gives access to a special storage, designed to
   hold raw data instead of files. Each datastore is a table of
   records. Each record is a set of key-value pairs where values can be
   strings, numbers etc.
@@ -281,7 +290,7 @@ permissions is sufficient.
 Therefore our server-side application uses two Dropbox APIs: CoreAPI
 and DatastoreAPI\@. CoreAPI is called to upload user media content (like
 images). Synchronization of other data (like coordinates and text) is
-performed via DatastoreAPI.
+performed via DatastoreAPI\@.
 
 As a substitute for Dropbox to backup user data we considered
 WebDAV\footnote{\url{http://webdav.org/}}. WebDAV is not a service but
@@ -332,28 +341,29 @@ necessity of hosting the server yourself (which can be either
 advantage or disadvantage, depending on the situation).
 
 \section{Ontologies}
-Ontologies is a way to represent knowledge in terms of terms and their
-relations for specific domain formally. There are a lot of already developed
-and designed ontologies for many scientific domain.
+Ontologies is a way to formally represent knowledge as set of terms
+and relations for a specific domain. There are a lot of already
+developed and designed ontologies for many scientific domains.
 
-Incorporation of such pre-defined ontologies into new projects in this specific domain could
-result in several benefits: the terms, that will be used in the project,
-now will have specific defined meaning, which would be the same for
-any other project, incorporating the same ontology, thus enabling their
-easier integration and communication. From other point of view - ontology
-often could be viewed as formal model of the field, thus making easier for
-specialist from other fields, communicate with the domain experts.
+Incorporation of such predefined ontologies into new projects in this specific
+domain can result in several benefits: the terms to be manipulated in the
+project will now have specific defined meaning, which would be the same for any
+other project incorporating the same ontology, thus enabling their easier
+integration and communication. From other point of view --- ontology often could
+be viewed as formal model of the field, thus making easier for specialist from
+other fields, communicate with the domain experts.
 
-The project developed is to be used by the Norwegian Ministry of Environment,
-for automating reporting of actual state of protected areas. The project
-could benefit from several ontologies from the ecology world.
+The project developed is intended to be utilized by the Norwegian
+Ministry of Environment, for automating reporting of actual state of
+protected areas. The project could benefit from several ontologies
+from the ecology world.
 
-First is The Extensible Observation Ontology (OBOE) being developed under the Science
-Environment for Ecological Knowledge (SEEK) project. This ontology
-specifies basic concepts in observations, measurements and monitoring datasets.
-By marking up the reports in the project with the appropriate terms from this
-ontology, the resulting collected data could be viewed and threated by any other
-automated tool properly.
+First is The Extensible Observation Ontology (OBOE) being developed
+under the Science Environment for Ecological Knowledge (SEEK) project.
+This ontology specifies basic concepts in observations, measurements
+and monitoring datasets. By marking up the reports in the project with
+the appropriate terms from this ontology, the resulting collected data
+could be viewed and treated by any other automated tool properly.
 
 The another type of the ontology could be used to ``tag'' each geonote with
 domain terms: for example, the user could specify the type of protected object
@@ -368,38 +378,43 @@ GeoNames. It contains a lot of information about the geographical objects:
 their coordinates, type, names in different languages.
 
 The advantage of integrating this service is lied in enhanced user experience,
-as it allows to operate, not only in geocoodinates terms (which people are not good
-in remembering), but also in real names of the objects.
-Also it could help to detect the problem with improper GPS-location. If under
-current location, user cannot see the expected object name, it could signal
-about not-updated location. All this could enhance the accuracy of the monitoring.
+as it allows to operate, not only in geocoodinates terms (which people are not
+good at remembering), but also in real names of the objects. Also it could help
+to detect the problem with improper GPS location. If under current location,
+user cannot see the expected object name, it could signal about not-updated
+location. All this could enhance the accuracy of the monitoring.
 
 \section{Reverse geocoding}
 
-As we discussed, geocoding is the process of finding associated geographic coordinates
-from other geographic data. In our project we used the technique of
-reverse geocoding, when the geographic entity is resolved given its
-coordinates as latitude and longitude. This information can be helpful
-when the user creates a new note on the map - by seeing the exact
-address of the created note he can ascertain that there are no mistake
-with note location.
+As we discussed, geocoding is the process of finding associated
+geographic coordinates from other geographic data. In our project we
+used the technique of reverse geocoding, when the geographic entity is
+resolved given its coordinates as latitude and longitude. This
+information can be helpful when the user creates a new note on the map
+--- by seeing the exact address of the created note he can ascertain
+that there are no mistake with note location.
 
 Since we already benefited from OpenStreetMap as the map provider, it was
-consistent to use OSM as a geocoding source. Eventually we ended up
-with Nominatim\footnote{\url{http://nominatim.openstreetmap.org}}, a simple
-service running on top of OSM databases. Nominatim provides an API
-accessed by HTTP GET request that returns data in the specified format
-(JSON in our case). It is similar to the GeoNames, but requires no registration
-and is managed by the OSM community.
+consistent to use OSM as a geocoding source. Eventually we ended up with
+Nominatim\footnote{\url{http://nominatim.openstreetmap.org}}, a simple service
+that runs on top of OSM databases. Nominatim provides an API accessed by HTTP
+GET request that returns data in the specified format (JSON in our case). It is
+similar to GeoNames, but requires no registration and is managed by the OSM
+community.
 
-One useful feature of Nominatim is the granularity of its results.
-This means that the coarser the coordinates are in the request, the
-more general the response will be. This synergizes rather well with
-Leaflet, which when clicked upon gives back coordinates of different
-accuracy based on the zoom factor. Therefore, if user clicks on the
-map from a top view, Nominatim returns the name of the country and
-probably city. But as the map is zoomed in more, geocoding source can
-response with more precise information.
+One useful feature of Nominatim is the granularity of its results. This means
+that the coarser the coordinates are in the request, the more general the
+response will be. This synergizes rather well with Leaflet, which when clicked
+upon gives back coordinates of different accuracy based on the zoom factor.
+Therefore, if user clicks on the map from a top view, Nominatim returns the name
+of the country and possibly the city. But as the map is zoomed in more, the
+geocoding source can response with more precise information.
+
+Nominatim has a combined advantage and disadvantage of not requiring any
+registration and/or API key. This simplifies the job of the developer, but at
+the same time makes the service not robust to overuse and DDOS attacks. This
+puts a question on reliability of consuming the service when it is maliciously
+or unintentionally being overloaded.
 
 \section{Source code}
     \begin{description}
